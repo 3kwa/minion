@@ -37,15 +37,16 @@ html, body {
         const save = (workspace) => { window.electronAPI.save(workspace) };
         const list = () => { return window.electronAPI.list() };
 
+        const help = `  open <url>       : opens a new window (minion) and loads <url>
+  save <workspace> : saves current <workspace> i.e. url, position, etc. of each minion
+  load <workspace> : loads a saved <workspace>
+  list             : lists all saved workspaces
+  quit             : closes (do)minion and all its minions`
         // the terminal !!!
     jQuery(function($, undefined) {
         $('#terminal').terminal({
             help: function() {
-                this.echo(`  open <url>       : opens a new window (minion) and loads <url>
-  save <workspace> : saves current workspace i.e. position + url of each window
-  load <workspace> : loads a saved workspace
-  list             : lists all saved workspaces
-  quit             : closes (do)minion`);
+                this.echo(help);
             },
             open: function(url) {
                 open(url)
@@ -66,7 +67,17 @@ html, body {
             quit: quit,
 
         }, {
-            greetings: "(do)minion - minimalistic HTML/CSS/JavaScript viewer",
+            greetings: `minimalistic HTML/CSS/JavaScript viewer
+---------------------------------------
+minion:
+  [1] a servile follower or underling
+  [2] one highly favored
+dominion:
+  [1] supreme authority
+  [2] absolute ownership
+---------------------------------------
+>>> help
+${help}`,
             height: 600,
             prompt: '>>> ',
             keymap: {
