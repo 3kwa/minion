@@ -19,4 +19,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   quit: () => ipcRenderer.send('quit'),
   open: (url) => ipcRenderer.send('open', url),
   save: (workspace) => ipcRenderer.send('save', workspace),
+  list: () => ipcRenderer.invoke('list'),
 })

@@ -31,41 +31,49 @@ html, body {
       electron: <span id="electron-version"></span>
     </div>
     <script>
-        const open = (url) => {window.electronAPI.open(url)};
-        const quit = () => {window.electronAPI.quit()};
+        // not sure how to get window inside terminal so ...
+        const open = (url) => { window.electronAPI.open(url) };
+        const quit = () => { window.electronAPI.quit() };
         const save = (workspace) => { window.electronAPI.save(workspace) };
-jQuery(function($, undefined) {
-    $('#terminal').terminal({
-        help: function() {
-            this.echo(`  open <url>       : opens a new window (minion) and loads <url>
+        const list = () => { return window.electronAPI.list() };
+
+        // the terminal !!!
+    jQuery(function($, undefined) {
+        $('#terminal').terminal({
+            help: function() {
+                this.echo(`  open <url>       : opens a new window (minion) and loads <url>
   save <workspace> : saves current workspace i.e. position + url of each window
   load <workspace> : loads a saved workspace
   list             : lists all saved workspaces
   quit             : closes (do)minion`);
-        },
-        open: function(url) {
-            open(url)
-        },
-        save: function(workspace) {
-            save(workspace)
-        },
-        load: function(workspace) {
-            // load workspace
-        },
-        list: function() {
-            // list all workspaces
-        },
-        quit: quit,
+            },
+            open: function(url) {
+                open(url)
+            },
+            save: function(workspace) {
+                save(workspace)
+            },
+            load: function(workspace) {
+                // load workspace
+            },
+            list: function() {
+                list().then((result) => {
+                    result.forEach((workspace, index) => {
+                        this.echo(`  ${workspace}`)
+                    })
+                })
+            },
+            quit: quit,
 
-    }, {
-        greetings: "(do)minion - minimalistic HTML/CSS/JavaScript viewer",
-        height: 600,
-        prompt: '>>> ',
-        keymap: {
-            'CTRL+D': function(e, original) { quit() },
-        }
+        }, {
+            greetings: "(do)minion - minimalistic HTML/CSS/JavaScript viewer",
+            height: 600,
+            prompt: '>>> ',
+            keymap: {
+                'CTRL+D': function(e, original) { quit() },
+            }
+        });
     });
-});
     </script>
   </body>
 </html>

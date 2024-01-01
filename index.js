@@ -25,6 +25,7 @@ app.whenReady().then(() => {
   ipcMain.on('save', (event, workspace) => {
     save(workspace)
   })
+  ipcMain.handle('list', list)
   doMinion()
 
   app.on('activate', () => {
@@ -69,4 +70,17 @@ const save = (workspace) => {
         list.push(data)
     })
     fs.writeFileSync(filePath, JSON.stringify(list));
+}
+
+const list = () => {
+    const data = app.getPath('userData')
+    const workspaces = path.join(data, 'workspaces')
+    if (!fs.existsSync(workspaces)){
+        return []
+    }
+    var list = []
+    fs.readdirSync(workspaces).forEach(file => {
+        list.push(path.parse(file).name)
+    })
+    return list
 }
