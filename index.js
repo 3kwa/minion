@@ -48,7 +48,11 @@ const open = (url) => {
 
 const save = (workspace) => {
     const data = app.getPath('userData')
-    const filePath = path.join(data, `${workspace}.json`)
+    const workspaces = path.join(data, 'workspaces')
+    if (!fs.existsSync(workspaces)){
+        fs.mkdirSync(workspaces);
+    }
+    const filePath = path.join(data, 'workspaces', `${workspace}.json`)
     console.log(filePath)
     var list = []
     const minions = BrowserWindow.getAllWindows();
