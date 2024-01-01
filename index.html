@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <title>dominion</title>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/jquery.terminal/js/jquery.terminal.min.js"></script>
+    <link rel="stylesheet" href="node_modules/jquery.terminal/css/jquery.terminal.min.css" />
+<style>
+html, body {
+    margin: 0;
+    height: 100%;
+}
+#footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-family: "Courier New", courier, monospace;
+    padding: .3em;
+    background-color: beige;
+}
+</style>
+  </head>
+  <body>
+    <div id="terminal"></div>
+    <div id="footer">
+      node: <span id="node-version"></span>
+      chromium: <span id="chrome-version"></span>
+      electron: <span id="electron-version"></span>
+    </div>
+    <script>
+        const open = (url) => {window.electronAPI.open(url)};
+        const quit = () => {window.electronAPI.quit()};
+        const save = (workspace) => { window.electronAPI.save(workspace) };
+jQuery(function($, undefined) {
+    $('#terminal').terminal({
+        help: function() {
+            this.echo(`  open <url>       : opens a new window (minion) and loads <url>
+  save <workspace> : saves current workspace i.e. position + url of each window
+  load <workspace> : loads a saved workspace
+  list             : lists all saved workspaces
+  quit             : closes (do)minion`);
+        },
+        open: function(url) {
+            open(url)
+        },
+        save: function(workspace) {
+            save(workspace)
+        },
+        load: function(workspace) {
+            // load workspace
+        },
+        list: function() {
+            // list all workspaces
+        },
+        quit: quit,
+
+    }, {
+        greetings: "(do)minion - minimalistic HTML/CSS/JavaScript viewer",
+        height: 600,
+        prompt: '>>> ',
+        keymap: {
+            'CTRL+D': function(e, original) { quit() },
+        }
+    });
+});
+    </script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "minion",
+  "version": "1.0.0",
+  "description": "minimalistic HTML/CSS/JavaScript viewer",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Eugene Van den Bulke",
+  "license": "Unlicense",
+  "devDependencies": {
+    "electron": "^28.1.0"
+  },
+  "dependencies": {
+    "jquery.terminal": "^2.37.2",
+    "local-echo": "github:wavesoft/local-echo",
+    "xterm": "^5.3.0"
+  }
+}
