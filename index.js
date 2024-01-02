@@ -16,16 +16,24 @@ const doMinion = () => {
 }
 
 app.whenReady().then(() => {
-  ipcMain.on('quit', (event) => {
-    app.quit()
-  })
+  // minion:
   ipcMain.on('open', (event, url) => {
     open(url)
   })
+    // workspace:
+  ipcMain.handle('info', info)
   ipcMain.on('save', (event, workspace) => {
     save(workspace)
   })
+  ipcMain.handle('desc', desc)
+  ipcMain.on('dele', (event, workspace) => {
+    dele(workspace)
+  })
   ipcMain.handle('list', list)
+    // dominion:
+  ipcMain.on('quit', (event) => {
+    app.quit()
+  })
   doMinion()
 
   app.on('activate', () => {
@@ -45,6 +53,16 @@ const open = (url) => {
     height: 300,
   })
   minion.loadURL(url)
+}
+
+const info = () => {
+    var list = []
+    const minions = BrowserWindow.getAllWindows();
+    minions.forEach((minion, index) => {
+        var url = minion.webContents.getURL();
+        list.push(url);
+    })
+    return list
 }
 
 const save = (workspace) => {
@@ -70,6 +88,28 @@ const save = (workspace) => {
         list.push(data)
     })
     fs.writeFileSync(filePath, JSON.stringify(list));
+}
+
+// not a .on but a .handle, first argument is event
+const desc = (event, workspace) => {
+    const data = app.getPath('userData')
+    const filePath = path.join(data, 'workspaces', `${workspace}.json`)
+    var list = []
+    if (fs.existsSync(filePath)){
+        var json = JSON.parse(fs.readFileSync(filePath));
+        json.forEach((data) => {
+            list.push(data.url)
+        })
+    }
+    return list
+}
+
+const dele = (workspace) => {
+    const data = app.getPath('userData')
+    const filePath = path.join(data, 'workspaces', `${workspace}.json`)
+    if (fs.existsSync(filePath)){
+        fs.unlinkSync(filePath)
+    }
 }
 
 const list = () => {
