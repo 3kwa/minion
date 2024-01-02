@@ -12,7 +12,7 @@ const doMinion = () => {
             preload: path.join(__dirname, 'preload.js')
         },
     })
-    dominion.loadFile('index.html')
+    dominion.loadFile('renderer.html')
 }
 
 app.whenReady().then(() => {

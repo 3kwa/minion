@@ -1,19 +1,19 @@
 {
-  "name": "minion",
-  "version": "1.0.0",
-  "description": "minimalistic HTML/CSS/JavaScript viewer",
-  "main": "index.js",
-  "scripts": {
-    "start": "electron .",
-    "watch": "nodemon --exec electron ."
-  },
-  "author": "Eugene Van den Bulke",
-  "license": "Unlicense",
-  "devDependencies": {
-    "electron": "^28.1.0",
-    "nodemon": "^3.0.2"
-  },
-  "dependencies": {
-    "jquery.terminal": "^2.37.2"
-  }
+    "name": "minion",
+    "version": "1.0.0",
+    "description": "minimalistic HTML/CSS/JavaScript viewer",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "watch": "nodemon --exec electron ."
+    },
+    "author": "Eugene Van den Bulke",
+    "license": "Unlicense",
+    "devDependencies": {
+        "electron": "^28.1.0",
+        "nodemon": "^3.0.2"
+    },
+    "dependencies": {
+        "jquery.terminal": "^2.37.2"
+    }
 }
