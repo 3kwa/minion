@@ -26,6 +26,9 @@ app.whenReady().then(() => {
     save(workspace)
   })
   ipcMain.handle('desc', desc)
+  ipcMain.on('load', (event, workspace) => {
+    load(workspace)
+  })
   ipcMain.on('dele', (event, workspace) => {
     dele(workspace)
   })
@@ -53,6 +56,7 @@ const open = (url) => {
     height: 300,
   })
   minion.loadURL(url)
+    return minion
 }
 
 const info = () => {
@@ -102,6 +106,19 @@ const desc = (event, workspace) => {
         })
     }
     return list
+}
+
+const load = (workspace) => {
+    const data = app.getPath('userData')
+    const filePath = path.join(data, 'workspaces', `${workspace}.json`)
+    if (fs.existsSync(filePath)){
+        var json = JSON.parse(fs.readFileSync(filePath));
+        json.forEach((data) => {
+            var minion = open(data.url)
+            minion.setPosition(data.x, data.y, true)
+            minion.setSize(data.width, data.height, true)
+        })
+    }
 }
 
 const dele = (workspace) => {
