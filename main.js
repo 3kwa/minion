@@ -39,6 +39,8 @@ app.whenReady().then(() => {
         app.quit()
      })
     var dominion = doMinion()
+    // saving the id so we don't save the dominion window
+    process.env.DOMINION_ID = dominion.id
     // closing the dominion window => quit
     dominion.on('close', () => { app.quit() })
 })
@@ -81,7 +83,7 @@ const save = (workspace) => {
             height: minion.getSize()[1],
             zoomFactor: minion.webContents.getZoomFactor(),
         }
-        if (!data.url.endsWith("minion/renderer.html")) { list.push(data) }
+        if (data.id != parseInt(process.env.DOMINION_ID)) { list.push(data) }
     })
     fs.writeFileSync(filePath, JSON.stringify(list));
 }
