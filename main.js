@@ -76,7 +76,6 @@ const save = (workspace) => {
         fs.mkdirSync(workspaces);
     }
     const filePath = path.join(data, 'workspaces', `${workspace}.json`)
-    console.log(filePath)
     var list = []
     const minions = BrowserWindow.getAllWindows();
     minions.forEach((minion, index) => {
