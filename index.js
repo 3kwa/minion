@@ -3,59 +3,59 @@ const path = require('path')
 const fs = require('fs')
 
 const doMinion = () => {
-  const dominion = new BrowserWindow({
-    width: 800,
-    height: 600,
-    resizable: false,
-    movable: false,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    },
-  })
-  dominion.loadFile('index.html')
+    const dominion = new BrowserWindow({
+        width: 800,
+        height: 600,
+        resizable: false,
+        movable: false,
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js')
+        },
+    })
+    dominion.loadFile('index.html')
 }
 
 app.whenReady().then(() => {
-  // minion:
-  ipcMain.on('open', (event, url) => {
-    open(url)
-  })
+    // minion:
+    ipcMain.on('open', (event, url) => {
+        open(url)
+     })
     // workspace:
-  ipcMain.handle('info', info)
-  ipcMain.on('save', (event, workspace) => {
-    save(workspace)
-  })
-  ipcMain.handle('desc', desc)
-  ipcMain.on('load', (event, workspace) => {
-    load(workspace)
-  })
-  ipcMain.on('dele', (event, workspace) => {
-    dele(workspace)
-  })
-  ipcMain.handle('list', list)
+    ipcMain.handle('info', info)
+    ipcMain.on('save', (event, workspace) => {
+        save(workspace)
+    })
+    ipcMain.handle('desc', desc)
+    ipcMain.on('load', (event, workspace) => {
+        load(workspace)
+    })
+    ipcMain.on('dele', (event, workspace) => {
+        dele(workspace)
+    })
+    ipcMain.handle('list', list)
     // dominion:
-  ipcMain.on('quit', (event) => {
-    app.quit()
-  })
-  doMinion()
+    ipcMain.on('quit', (event) => {
+        app.quit()
+     })
+    doMinion()
 
-  app.on('activate', () => {
-    // macOS ...
-    if (BrowserWindow.getAllWindows().length === 0) doMinion()
-  })
+    app.on('activate', () => {
+        // macOS ...
+        if (BrowserWindow.getAllWindows().length === 0) doMinion()
+    })
 })
 
 app.on('window-all-closed', () => {
-  // macOS ...
-  if (process.platform !== 'darwin') app.quit()
+    // macOS ...
+    if (process.platform !== 'darwin') app.quit()
 })
 
 const open = (url) => {
-  const minion = new BrowserWindow({
-    width: 400,
-    height: 300,
-  })
-  minion.loadURL(url)
+    const minion = new BrowserWindow({
+        width: 400,
+        height: 300,
+    })
+    minion.loadURL(url)
     return minion
 }
 
