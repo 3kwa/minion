@@ -13,6 +13,7 @@ const doMinion = () => {
         },
     })
     dominion.loadFile('renderer.html')
+    return dominion
 }
 
 app.whenReady().then(() => {
@@ -37,17 +38,9 @@ app.whenReady().then(() => {
     ipcMain.on('quit', (event) => {
         app.quit()
      })
-    doMinion()
-
-    app.on('activate', () => {
-        // macOS ...
-        if (BrowserWindow.getAllWindows().length === 0) doMinion()
-    })
-})
-
-app.on('window-all-closed', () => {
-    // macOS ...
-    if (process.platform !== 'darwin') app.quit()
+    var dominion = doMinion()
+    // closing the dominion window => quit
+    dominion.on('close', () => { app.quit() })
 })
 
 const open = (url) => {
