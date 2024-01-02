@@ -64,7 +64,7 @@ const info = () => {
     const minions = BrowserWindow.getAllWindows();
     minions.forEach((minion, index) => {
         var url = minion.webContents.getURL();
-        list.push(url);
+        if (!url.endsWith("minion/renderer.html")) { list.push(url) }
     })
     return list
 }
@@ -89,7 +89,7 @@ const save = (workspace) => {
             height: minion.getSize()[1],
             zoomFactor: minion.webContents.getZoomFactor(),
         }
-        list.push(data)
+        if (!data.url.endsWith("minion/renderer.html")) { list.push(data) }
     })
     fs.writeFileSync(filePath, JSON.stringify(list));
 }
