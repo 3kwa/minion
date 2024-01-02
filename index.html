@@ -32,30 +32,51 @@ html, body {
     </div>
     <script>
         // not sure how to get window inside terminal so ...
+        // minion:
         const open = (url) => { window.electronAPI.open(url) };
-        const quit = () => { window.electronAPI.quit() };
+        const info = () => { window.electronAPI.info() };
+        // workspace:
         const save = (workspace) => { window.electronAPI.save(workspace) };
+        const desc = (workspace) => { window.electronAPI.desc(workspace) };
+        const load = (workspace) => { window.electronAPI.load(workspace) };
+        const dele = (workspace) => { window.electronAPI.dele(workspace) };
         const list = () => { return window.electronAPI.list() };
-
-        const help = `  open <url>       : opens a new window (minion) and loads <url>
+        // dominion:
+        const help = `minion:
+  open <url>       : opens a new window (minion) and loads <url>
+  info             : list opened minions
+workspace:
   save <workspace> : saves current <workspace> i.e. url, position, etc. of each minion
-  load <workspace> : loads a saved <workspace>
+  desc <workspace> : list minions saved in <workspace>
+  load <workspace> : loads saved <workspace>
+  dele <workspace> : delete <workspace>
   list             : lists all saved workspaces
+dominion:
+  help             : ...
   quit             : closes (do)minion and all its minions`
+        const quit = () => { window.electronAPI.quit() };
         // the terminal !!!
     jQuery(function($, undefined) {
         $('#terminal').terminal({
-            help: function() {
-                this.echo(help);
-            },
-            open: function(url) {
+            // minion:
+            open: (url) => {
                 open(url)
             },
-            save: function(workspace) {
+            info: () => {
+                open(url)
+            },
+            // workspace:
+            save: (workspace) => {
                 save(workspace)
             },
-            load: function(workspace) {
-                // load workspace
+            desc: (workspace) => {
+                desc(workspace)
+            },
+            load: (workspace) => {
+                load(workspace)
+            },
+            dele: (workspace) => {
+                dele(workspace)
             },
             list: function() {
                 list().then((result) => {
@@ -63,6 +84,10 @@ html, body {
                         this.echo(`  ${workspace}`)
                     })
                 })
+            },
+            // dominion:
+            help: function() {
+                this.echo(help);
             },
             quit: quit,
 
