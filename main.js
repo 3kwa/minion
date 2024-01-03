@@ -1,4 +1,5 @@
 const log = require('electron-log/main')
+// to get __electronLog in renderer
 log.initialize()
 log.info("minion starting")
 
