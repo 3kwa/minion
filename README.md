@@ -13,3 +13,7 @@ Collections of windows displaying relevant information one can interact with is 
 ## how?
 
 Just enough HTML, CSS and JavaScript wrapped in an [electron](https://www.electronjs.org) layer, exposing a console like interface built using [jQuery.terminal](https://terminal.jcubic.pl), implementing just enough commands to get the job done.
+
+## installation
+
+The old school way for now, visit [releases](https://github.com/3kwa/minion/releases), download and mess around.
