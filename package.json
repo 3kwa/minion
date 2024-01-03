@@ -22,6 +22,7 @@
     "nodemon": "^3.0.2"
   },
   "dependencies": {
+    "electron-log": "^5.0.3",
     "electron-squirrel-startup": "^1.0.0",
     "jquery.terminal": "^2.37.2"
   }

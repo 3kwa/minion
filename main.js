@@ -1,3 +1,7 @@
+const log = require('electron-log/main')
+log.initialize()
+log.info("minion starting")
+
 const { app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 const fs = require('fs')
@@ -36,13 +40,20 @@ app.whenReady().then(() => {
     ipcMain.handle('list', list)
     // dominion:
     ipcMain.on('quit', (event) => {
-        app.quit()
+        quit()
      })
     var dominion = doMinion()
     // saving the id so we don't save the dominion window
     process.env.DOMINION_ID = dominion.id
     // closing the dominion window => quit
-    dominion.on('close', () => { app.quit() })
+    dominion.on('close', () => {
+        log.info("dominion stopping")
+        quit()
+    })
+})
+
+app.on('quit', () => {
+    log.info("minion stopping")
 })
 
 const open = (url) => {
@@ -51,6 +62,10 @@ const open = (url) => {
         height: 300,
     })
     minion.loadURL(url)
+    // handling pages with beforeunload preventing close
+    minion.webContents.on('will-prevent-unload', (event) => {
+        event.preventDefault()
+    })
     return minion
 }
 
@@ -59,7 +74,7 @@ const info = () => {
     const minions = BrowserWindow.getAllWindows();
     minions.forEach((minion, index) => {
         var url = minion.webContents.getURL();
-        if (!url.endsWith("minion/renderer.html")) { list.push(url) }
+        if (minion.id != parseInt(process.env.DOMINION_ID)) { list.push(url) }
     })
     return list
 }
@@ -134,4 +149,8 @@ const list = () => {
         list.push(path.parse(file).name)
     })
     return list
+}
+
+const quit = () => {
+    app.quit()
 }
