@@ -11,17 +11,17 @@ const dele = (workspace) => { window.electronAPI.dele(workspace) };
 const list = () => { return window.electronAPI.list() };
 // dominion:
 const help = `minion:
-  open <url>       : opens a new window (minion) and loads <url>
+  [[;black;white]open] <url>       : opens a new window (minion) and loads <url>
 workspace:
-  info             : lists minions in workspace
-  save <workspace> : saves current <workspace> i.e. url, position, etc. of each minion
-  desc <workspace> : lists minions saved in <workspace>
-  load <workspace> : loads saved <workspace>
-  dele <workspace> : deletes <workspace>
-  list             : lists all saved workspaces
+  [[;black;white]info]             : lists minions in workspace
+  [[;black;white]save] <workspace> : saves current <workspace> i.e. url, position, etc. of each minion
+  [[;black;white]desc] <workspace> : lists minions saved in <workspace>
+  [[;black;white]load] <workspace> : loads saved <workspace>
+  [[;black;white]dele] <workspace> : deletes <workspace>
+  [[;black;white]list]             : lists all saved workspaces
 dominion:
-  help             : ...
-  quit             : closes (do)minion and all its minions`
+  [[;black;white]help]             : ...
+  [[;black;white]quit]             : closes (do)minion and all its minions`
 const quit = () => { window.electronAPI.quit() };
 
 // ZE TERMINAL !!!
@@ -34,7 +34,7 @@ jQuery(function($, undefined) {
         info: function() {
             info().then((result) => {
                 result.forEach((url) => {
-                    this.echo(`  ${url}`)
+                    this.echo(`  [[;black;white]${url}]`)
                 })
             })
         },
@@ -45,7 +45,7 @@ jQuery(function($, undefined) {
         desc: function(workspace) {
             desc(workspace).then((result) => {
                 result.forEach((minion, index) => {
-                    this.echo(`  ${minion}`)
+                    this.echo(`  [[;black;white]${minion}]`)
                 })
             })
         },
@@ -58,7 +58,7 @@ jQuery(function($, undefined) {
         list: function() {
             list().then((result) => {
                 result.forEach((workspace, index) => {
-                    this.echo(`  ${workspace}`)
+                    this.echo(`  [[;black;white]${workspace}]`)
                 })
             })
         },
