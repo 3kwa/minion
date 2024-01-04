@@ -93,6 +93,11 @@ ${help}`,
                 + '[[ub;;]help], quit'
                 + $.terminal.escape_formatting(']')
                 + ']')
+        },
+        historyFilter: (command) => {
+            return 'open info save desc load dele list help quit'.includes(
+                $.terminal.parse_command(command).name
+            )
         }
     })
 })
