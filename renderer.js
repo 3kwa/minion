@@ -83,7 +83,9 @@ ${help}`,
         prompt: '>>> ',
         keymap: {
             'CTRL+D': function(e, original) { quit() },
-        }
+        },
+        completion: true,
+        convertLinks: false,
     })
 })
 
