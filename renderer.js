@@ -86,6 +86,14 @@ ${help}`,
         },
         completion: true,
         convertLinks: false,
+        onCommandNotFound: (command, terminal) => {
+            terminal.echo(
+                `[[;red;]ERR [[b;;]${command}] not in `
+                + $.terminal.escape_formatting('[open, info, save, desc, load, dele, list, ')
+                + '[[ub;;]help], quit'
+                + $.terminal.escape_formatting(']')
+                + ']')
+        }
     })
 })
 
