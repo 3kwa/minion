@@ -125,8 +125,8 @@ const load = (workspace) => {
         var json = JSON.parse(fs.readFileSync(filePath));
         json.forEach((data) => {
             var minion = open(data.url)
-            minion.setPosition(data.x, data.y, true)
-            minion.setSize(data.width, data.height, true)
+            minion.setPosition(data.x, data.y, false)
+            minion.setSize(data.width, data.height, false)
         })
     }
 }
