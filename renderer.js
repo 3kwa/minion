@@ -2,26 +2,29 @@ __electronLog.info("dominion starting")
 // not sure how to get window inside terminal so ...
 // minion:
 const open = (url) => { window.electronAPI.open(url) };
+const shut = (url) => { window.electronAPI.shut() };
 // workspace:
 const info = () => { return window.electronAPI.info() };
 const save = (workspace) => { window.electronAPI.save(workspace) };
 const desc = (workspace) => { return window.electronAPI.desc(workspace) };
 const load = (workspace) => { window.electronAPI.load(workspace) };
+const less = (workspace) => { window.electronAPI.less(workspace) };
 const dele = (workspace) => { window.electronAPI.dele(workspace) };
 const list = () => { return window.electronAPI.list() };
 // dominion:
-const help = `minion:
-  [[;black;white]open] <url>       : opens a new window (minion) and loads <url>
+const help = `windows:
+  [[;black;white]open] <url>               : opens a new window and loads <url>
+  [[;black;white]shut]                     : closes [[i;;]all] windows
 workspace:
-  [[;black;white]info]             : lists minions in workspace
-  [[;black;white]save] <workspace> : saves current <workspace> i.e. url, position, etc. of each minion
-  [[;black;white]desc] <workspace> : lists minions saved in <workspace>
-  [[;black;white]load] <workspace> : loads saved <workspace>
-  [[;black;white]dele] <workspace> : deletes <workspace>
-  [[;black;white]list]             : lists all saved workspaces
+  [[;black;white]info]                     : lists windows in workspace
+  [[;black;white]save] <workspace>         : saves current <workspace>
+  [[;black;white]desc] <workspace>         : lists windows saved in <workspace>
+  [[;black;white]load] / [[;black;white]less]  <workspace> : loads saved <workspace> ...
+  [[;black;white]dele] <workspace>         : deletes <workspace>
+  [[;black;white]list]                     : lists all saved workspaces
 dominion:
-  [[;black;white]help]             : ...
-  [[;black;white]quit]             : closes (do)minion and all its minions`
+  [[;black;white]help]                     : ...
+  [[;black;white]quit]                     : closes [[b;;]all] windows and quits`
 const quit = () => { window.electronAPI.quit() };
 
 // ZE TERMINAL !!!
@@ -30,6 +33,9 @@ jQuery(function($, undefined) {
         // minion:
         open: (url) => {
             open(url)
+        },
+        shut: () => {
+            shut()
         },
         info: function() {
             info().then((result) => {
@@ -51,6 +57,9 @@ jQuery(function($, undefined) {
         },
         load: (workspace) => {
             load(workspace)
+        },
+        less: (workspace) => {
+            less(workspace)
         },
         dele: (workspace) => {
             dele(workspace)
@@ -89,15 +98,19 @@ ${help}`,
         onCommandNotFound: (command, terminal) => {
             terminal.echo(
                 `[[;red;]ERR [[b;;]${command}] not in `
-                + $.terminal.escape_formatting('[open, info, save, desc, load, dele, list, ')
+                + $.terminal.escape_formatting('[open, shut, info, save, desc, load, less, dele, list, ')
                 + '[[ub;;]help], quit'
                 + $.terminal.escape_formatting(']')
                 + ']')
         },
         historyFilter: (command) => {
-            return 'open info save desc load dele list help quit'.includes(
+            return 'open shut info save desc load less dele list help quit'.includes(
                 $.terminal.parse_command(command).name
             )
+        },
+        exceptionHandler: function(exception) {
+            this.echo(`[[;red;]EXC ${exception.message}`)
+            __electronLog.error(exception.stack)
         }
     })
 })

@@ -17,11 +17,13 @@ const { contextBridge, ipcRenderer } = require('electron')
 contextBridge.exposeInMainWorld('electronAPI', {
     // minion:
     open: (url) => ipcRenderer.send('open', url),
+    shut: () => ipcRenderer.send('shut'),
     // workspace:
     info: () => ipcRenderer.invoke('info'),
     save: (workspace) => ipcRenderer.send('save', workspace),
     desc: (workspace) => ipcRenderer.invoke('desc', workspace),
     load: (workspace) => ipcRenderer.send('load', workspace),
+    less: (workspace) => ipcRenderer.send('less', workspace),
     dele: (workspace) => ipcRenderer.send('dele', workspace),
     list: () => ipcRenderer.invoke('list'),
     // dominion:

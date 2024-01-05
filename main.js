@@ -24,21 +24,21 @@ const doMinion = () => {
 const isMac = process.platform === 'darwin'
 
 const template = [
-  // app menu
-  ...(isMac
-    ? [{
-        label: app.name,
-        submenu: [
-          { role: 'about' },
-          { type: 'separator' },
-          { role: 'hide' },
-          { role: 'hideOthers' },
-          { role: 'unhide' },
-          { type: 'separator' },
-          { role: 'quit' }
-        ]
-      }]
-    : []),
+    // app menu
+    ...(isMac
+        ? [{
+            label: app.name,
+            submenu: [
+              { role: 'about' },
+              { type: 'separator' },
+              { role: 'hide' },
+              { role: 'hideOthers' },
+              { role: 'unhide' },
+              { type: 'separator' },
+              { role: 'quit' }
+            ]
+          }]
+        : []),
     // view
     {
         label: 'view',
@@ -52,24 +52,22 @@ const template = [
             { role: 'zoomOut'}
         ]
     },
-  // window
-  {
-    label: 'window',
-    submenu: [
-      { role: 'minimize' },
-      { role: 'zoom' },
-      ...(isMac
-        ? [
+    // window
+    {
+        label: 'window',
+        submenu: [
+            { role: 'minimize' },
+            { role: 'close' },
             { type: 'separator' },
-            { role: 'front' },
-            { type: 'separator' },
-            { role: 'window' }
-          ]
-        : [
-            { role: 'close' }
-          ])
-    ]
-  }
+            {
+                label: 'dominion',
+                click: () => {
+                    BrowserWindow.fromId(parseInt(process.env.DOMINION_ID)).show()
+                },
+                accelerator: 'CommandOrControl+D',
+            }
+        ]
+    }
 ]
 
 const menu = Menu.buildFromTemplate(template)
@@ -80,6 +78,9 @@ app.whenReady().then(() => {
     ipcMain.on('open', (event, url) => {
         open(url)
      })
+    ipcMain.on('shut', (event) => {
+        shut()
+     })
     // workspace:
     ipcMain.handle('info', info)
     ipcMain.on('save', (event, workspace) => {
@@ -88,6 +89,9 @@ app.whenReady().then(() => {
     ipcMain.handle('desc', desc)
     ipcMain.on('load', (event, workspace) => {
         load(workspace)
+    })
+    ipcMain.on('less', (event, workspace) => {
+        less(workspace)
     })
     ipcMain.on('dele', (event, workspace) => {
         dele(workspace)
@@ -111,10 +115,12 @@ app.on('quit', () => {
     log.info("minion stopping")
 })
 
-const open = (url) => {
+const open = (url, frame=true) => {
     const minion = new BrowserWindow({
         width: 400,
         height: 300,
+        frame: frame,
+        roundedCorners: frame,
     })
     minion.loadURL(url)
     // handling pages with beforeunload preventing close
@@ -122,6 +128,13 @@ const open = (url) => {
         event.preventDefault()
     })
     return minion
+}
+
+const shut = () => {
+    const minions = BrowserWindow.getAllWindows();
+    minions.forEach((minion) => {
+        if (minion.id != parseInt(process.env.DOMINION_ID)) { minion.close() }
+    })
 }
 
 const info = () => {
@@ -172,18 +185,21 @@ const desc = (event, workspace) => {
     return list
 }
 
-const load = (workspace) => {
+const _load = (workspace, frame) => {
     const data = app.getPath('userData')
     const filePath = path.join(data, 'workspaces', `${workspace}.json`)
     if (fs.existsSync(filePath)){
         var json = JSON.parse(fs.readFileSync(filePath));
         json.forEach((data) => {
-            var minion = open(data.url)
+            var minion = open(data.url, frame)
             minion.setPosition(data.x, data.y, false)
             minion.setSize(data.width, data.height, false)
         })
     }
 }
+
+const load = (workspace) => { _load(workspace, true) }
+const less = (workspace) => { _load(workspace, false) }
 
 const dele = (workspace) => {
     const data = app.getPath('userData')
