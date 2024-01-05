@@ -13,18 +13,18 @@ const dele = (workspace) => { window.electronAPI.dele(workspace) };
 const list = () => { return window.electronAPI.list() };
 // dominion:
 const help = `windows:
-  [[;black;white]open] <url>               : opens a new window and loads <url>
-  [[;black;white]shut]                     : closes [[i;;]all] windows
+  [[;black;white]open] <url>          : opens a new window and loads <url>
+  [[;black;white]shut]                : closes [[i;;]all] windows
+  [[;black;white]info]                : lists windows
 workspace:
-  [[;black;white]info]                     : lists windows in workspace
-  [[;black;white]save] <workspace>         : saves current <workspace>
-  [[;black;white]desc] <workspace>         : lists windows saved in <workspace>
-  [[;black;white]load] / [[;black;white]less]  <workspace> : loads saved <workspace> ...
-  [[;black;white]dele] <workspace>         : deletes <workspace>
-  [[;black;white]list]                     : lists all saved workspaces
+  [[;black;white]save] <name>         : saves windows under <name>
+  [[;black;white]desc] <name>         : lists windows saved under <name>
+  [[;black;white]load] / [[;black;white]less]  <name> : opens all windows saved under <name> ...
+  [[;black;white]dele] <name>         : deletes <name>
+  [[;black;white]list]                : lists workspaces
 dominion:
-  [[;black;white]help]                     : ...
-  [[;black;white]quit]                     : closes [[b;;]all] windows and quits`
+  [[;black;white]help]                : ...
+  [[;black;white]quit]                : closes [[b;;]all] windows and quits`
 const quit = () => { window.electronAPI.quit() };
 
 // ZE TERMINAL !!!
