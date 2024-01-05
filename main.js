@@ -3,7 +3,7 @@ const log = require('electron-log/main')
 log.initialize()
 log.info("minion starting")
 
-const { app, BrowserWindow, ipcMain} = require('electron')
+const { app, BrowserWindow, ipcMain, Menu } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -20,6 +20,60 @@ const doMinion = () => {
     dominion.loadFile('renderer.html')
     return dominion
 }
+
+const isMac = process.platform === 'darwin'
+
+const template = [
+  // app menu
+  ...(isMac
+    ? [{
+        label: app.name,
+        submenu: [
+          { role: 'about' },
+          { type: 'separator' },
+          { role: 'hide' },
+          { role: 'hideOthers' },
+          { role: 'unhide' },
+          { type: 'separator' },
+          { role: 'quit' }
+        ]
+      }]
+    : []),
+    // view
+    {
+        label: 'view',
+        submenu: [
+            { role: 'reload' },
+            { role: 'forceReload' },
+            { role: 'toggleDevTools' },
+            { type: 'separator' },
+            { role: 'resetZoom' },
+            { role: 'zoomIn' },
+            { role: 'zoomOut'}
+        ]
+    },
+  // window
+  {
+    label: 'window',
+    submenu: [
+      { role: 'minimize' },
+      { role: 'zoom' },
+      ...(isMac
+        ? [
+            { type: 'separator' },
+            { role: 'front' },
+            { type: 'separator' },
+            { role: 'window' }
+          ]
+        : [
+            { role: 'close' }
+          ])
+    ]
+  }
+]
+
+const menu = Menu.buildFromTemplate(template)
+Menu.setApplicationMenu(menu)
 
 app.whenReady().then(() => {
     // minion:
