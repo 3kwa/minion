@@ -21,6 +21,13 @@ module.exports = {
       name: '@electron-forge/maker-rpm',
       config: {},
     },
+      {
+          name: '@electron-forge/maker-dmg',
+          config: {
+              icon: 'icons/minion.icns',
+              background: 'icons/dmg.png',
+          },
+      },
   ],
   plugins: [
     {
