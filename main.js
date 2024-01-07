@@ -163,7 +163,7 @@ const save = (workspace) => {
     minions.forEach((minion) => {
         // Execute JavaScript to get scroll positions
         minion.webContents.executeJavaScript("Promise.resolve({scrollX: window.scrollX, scrollY: window.scrollY})").then((scrollPos) => {
-                var data = {
+            var data = {
                 id: minion.id,
                 url: minion.webContents.getURL(),
                 x: minion.getPosition()[0],
@@ -173,14 +173,14 @@ const save = (workspace) => {
                 zoomFactor: minion.webContents.getZoomFactor(),
                 scrollX: scrollPos.scrollX,
                 scrollY: scrollPos.scrollY
-                };
-                list.push(data);
+            };
+            list.push(data);
 
-                // Decrement counter and write to file when all windows are processed
-                counter--;
-                if (counter === 0) {
-                fs.writeFileSync(filePath, JSON.stringify(list));
-                }
+            // Decrement counter and write to file when all windows are processed
+            counter--;
+            if (counter === 0) {
+            fs.writeFileSync(filePath, JSON.stringify(list));
+            }
         });
     });
 }    
