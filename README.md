@@ -16,4 +16,31 @@ Just enough HTML, CSS and JavaScript wrapped in an [electron](https://www.electr
 
 ## installation
 
-The old school way for now, visit [releases](https://github.com/3kwa/minion/releases), download and mess around.
+MacOS only at this stage, but since `minion` is built using [electron](https://www.electronjs.org) should be relatively straightforward cut releases for Windows and Linux ... PR welcome.
+
+### [brew](https://brew.sh) [tap](https://github.com/3kwa/homebrew-minion)
+
+Since `v1.0.5`, first (and only once):
+
+    `$ brew tap 3kwa/minion`
+
+Then:
+
+    `$ brew install minion --no-quarantine`
+
+The `--no-quarantine` is necessary _for now_.
+
+### [Releases](https://github.com/3kwa/minion/releases)
+
+#### DMG
+
+Since `v1.0.5` releases include a DMG file. Download, open, drag and your are done.
+
+#### zip
+
+Since `v1.0.0`
+
+The old school, download, unzip and mess around:
+
+    `$ rm -rf /Applications/minion.app && mv <unzipped>/minion.app /Applications/minion.app`
+
