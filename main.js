@@ -151,25 +151,39 @@ const save = (workspace) => {
     const data = app.getPath('userData')
     const workspaces = path.join(data, 'workspaces')
     if (!fs.existsSync(workspaces)){
-        fs.mkdirSync(workspaces);
+            fs.mkdirSync(workspaces);
     }
     const filePath = path.join(data, 'workspaces', `${workspace}.json`)
     var list = []
-    const minions = BrowserWindow.getAllWindows();
-    minions.forEach((minion, index) => {
-        var data = {
-            id: minion.id,
-            url: minion.webContents.getURL(),
-            x: minion.getPosition()[0],
-            y: minion.getPosition()[1],
-            width: minion.getSize()[0],
-            height: minion.getSize()[1],
-            zoomFactor: minion.webContents.getZoomFactor(),
-        }
-        if (data.id != parseInt(process.env.DOMINION_ID)) { list.push(data) }
-    })
-    fs.writeFileSync(filePath, JSON.stringify(list));
-}
+    const minions = BrowserWindow.getAllWindows().filter((minion) => minion.id !== parseInt(process.env.DOMINION_ID));
+
+    // Use a counter to handle asynchronous execution
+    let counter = minions.length;
+
+    minions.forEach((minion) => {
+        // Execute JavaScript to get scroll positions
+        minion.webContents.executeJavaScript("Promise.resolve({scrollX: window.scrollX, scrollY: window.scrollY})").then((scrollPos) => {
+                var data = {
+                id: minion.id,
+                url: minion.webContents.getURL(),
+                x: minion.getPosition()[0],
+                y: minion.getPosition()[1],
+                width: minion.getSize()[0],
+                height: minion.getSize()[1],
+                zoomFactor: minion.webContents.getZoomFactor(),
+                scrollX: scrollPos.scrollX,
+                scrollY: scrollPos.scrollY
+                };
+                list.push(data);
+
+                // Decrement counter and write to file when all windows are processed
+                counter--;
+                if (counter === 0) {
+                fs.writeFileSync(filePath, JSON.stringify(list));
+                }
+        });
+    });
+}    
 
 // not a .on but a .handle, first argument is event
 const desc = (event, workspace) => {
@@ -194,6 +208,10 @@ const _load = (workspace, frame) => {
             var minion = open(data.url, frame)
             minion.setPosition(data.x, data.y, false)
             minion.setSize(data.width, data.height, false)
+            // Only set scroll positions if they exist for backwards compatibility
+            if (data.scrollX || data.scrollY) minion.webContents.once('did-finish-load', () => {
+                minion.webContents.executeJavaScript(`window.scrollTo(${data.scrollX || 0}, ${data.scrollY || 0})`);
+            });
         })
     }
 }
