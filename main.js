@@ -39,6 +39,18 @@ const template = [
             ]
           }]
         : []),
+    // edit
+    {
+        label: 'edit',
+        submenu: [
+            { role: 'undo' },
+            { role: 'redo' },
+            { type: 'separator' },
+            { role: 'cut' },
+            { role: 'copy' },
+            { role: 'paste' },
+        ]
+    },
     // view
     {
         label: 'view',
@@ -183,7 +195,7 @@ const save = (workspace) => {
             }
         });
     });
-}    
+}
 
 // not a .on but a .handle, first argument is event
 const desc = (event, workspace) => {
