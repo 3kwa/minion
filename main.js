@@ -127,20 +127,57 @@ app.on('quit', () => {
     log.info("minion stopping")
 })
 
-const open = (url, frame=true) => {
+const open = (url, frame = true) => {
     const minion = new BrowserWindow({
         width: 400,
         height: 300,
         frame: frame,
         roundedCorners: frame,
-    })
-    minion.loadURL(url)
-    // handling pages with beforeunload preventing close
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            webviewTag: true,
+        }
+    });
+
+    let htmlContent = `
+        <html>
+        <head>
+            <style>
+                .draggable {
+                    -webkit-app-region: drag;
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    width: 20px;
+                    height: 20px;
+                    background: rgba(0, 0, 0, 0.25);
+                    border-radius: 50%;
+                    ${frame ? 'display: none;' : ''}
+                }
+                body {
+                    margin: 0;
+                }
+                webview {
+                    width: 100%;
+                    height: 100%;
+                }
+            </style>
+        </head>
+        <body>
+            <div class='draggable'></div>
+            <webview src='${url}' style='height:calc(100%);border:none;'></webview>
+        </body>
+        </html>`;
+
+    minion.loadURL(`data:text/html,${encodeURIComponent(htmlContent)}`);
+
     minion.webContents.on('will-prevent-unload', (event) => {
-        event.preventDefault()
-    })
-    return minion
-}
+        event.preventDefault();
+    });
+
+    return minion;
+};
 
 const shut = () => {
     const minions = BrowserWindow.getAllWindows();
@@ -160,39 +197,44 @@ const info = () => {
 }
 
 const save = (workspace) => {
-    const data = app.getPath('userData')
-    const workspaces = path.join(data, 'workspaces')
+    const data = app.getPath('userData');
+    const workspaces = path.join(data, 'workspaces');
     if (!fs.existsSync(workspaces)){
         fs.mkdirSync(workspaces);
     }
-    const filePath = path.join(data, 'workspaces', `${workspace}.json`)
-    var list = []
+    const filePath = path.join(data, 'workspaces', `${workspace}.json`);
+    var list = [];
     const minions = BrowserWindow.getAllWindows().filter((minion) => minion.id !== parseInt(process.env.DOMINION_ID));
 
     // Use a counter to handle asynchronous execution
     let counter = minions.length;
 
     minions.forEach((minion) => {
-        // Execute JavaScript to get scroll positions
-        minion.webContents.executeJavaScript("Promise.resolve({scrollX: window.scrollX, scrollY: window.scrollY})").then((scrollPos) => {
+        // Execute JavaScript inside each webview to get the URL and scroll positions
+        minion.webContents.executeJavaScript(`
+            document.querySelector('webview').executeJavaScript("Promise.resolve({ url: location.href, scrollX: window.scrollX, scrollY: window.scrollY })")
+        `).then((result) => {
             var data = {
                 id: minion.id,
-                url: minion.webContents.getURL(),
+                url: result.url, // URL from within the webview
                 x: minion.getPosition()[0],
                 y: minion.getPosition()[1],
                 width: minion.getSize()[0],
                 height: minion.getSize()[1],
                 zoomFactor: minion.webContents.getZoomFactor(),
-                scrollX: scrollPos.scrollX,
-                scrollY: scrollPos.scrollY
+                scrollX: result.scrollX,
+                scrollY: result.scrollY
             };
             list.push(data);
 
             // Decrement counter and write to file when all windows are processed
             counter--;
             if (counter === 0) {
-            fs.writeFileSync(filePath, JSON.stringify(list));
+                fs.writeFileSync(filePath, JSON.stringify(list));
             }
+        }).catch(err => {
+            console.error("Error retrieving webview data: ", err);
+            counter--;
         });
     });
 }
@@ -212,17 +254,22 @@ const desc = (event, workspace) => {
 }
 
 const _load = (workspace, frame) => {
-    const data = app.getPath('userData')
-    const filePath = path.join(data, 'workspaces', `${workspace}.json`)
+    const data = app.getPath('userData');
+    const filePath = path.join(data, 'workspaces', `${workspace}.json`);
     if (fs.existsSync(filePath)){
         var json = JSON.parse(fs.readFileSync(filePath));
         json.forEach((data) => {
-            var minion = open(data.url, frame)
-            minion.setPosition(data.x, data.y, false)
-            minion.setSize(data.width, data.height, false)
-            // Only set scroll positions if they exist for backwards compatibility
-            if (data.scrollX || data.scrollY) minion.webContents.once('did-finish-load', () => {
-                minion.webContents.executeJavaScript(`window.scrollTo(${data.scrollX || 0}, ${data.scrollY || 0})`);
+            var minion = open(data.url, frame);
+            minion.setPosition(data.x, data.y, false);
+            minion.setSize(data.width, data.height, false);
+            
+            // Set scroll positions after the webview has finished loading
+            minion.webContents.once('did-finish-load', () => {
+                minion.webContents.executeJavaScript(`
+                    document.querySelector('webview').executeJavaScript("window.scrollTo(${data.scrollX || 0}, ${data.scrollY || 0})")
+                `).catch(err => {
+                    console.error("Error setting scroll position: ", err);
+                });
             });
         })
     }
