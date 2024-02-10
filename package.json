@@ -1,6 +1,6 @@
 {
   "name": "minion",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "minimalistic HTML/CSS/JavaScript viewer",
   "main": "main.js",
   "scripts": {

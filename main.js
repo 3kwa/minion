@@ -97,10 +97,12 @@ const template = [
     submenu: [
       { role: "minimize" },
       { role: "close" },
+      { type: "separator" },
       {
-        label: "Toggle Move",
+        label: "toggle move",
         click: toggleDraggableComponent,
         accelerator: "CommandOrControl+Shift+M",
+        visible: false,
       },
       { type: "separator" },
       {
@@ -186,20 +188,15 @@ const open = (url, frame = true) => {
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    background: rgba(0, 0, 0, 0.25);
+                    background: repeating-linear-gradient(
+                      45deg,
+                      transparent,
+                      transparent 10px,
+                      rgba(0, 0, 0, 0.2) 10px,
+                      rgba(0, 0, 0, 0.2) 20px
+                    );
                     display: none;
                     text-align:center
-                }
-                .drag-icon {
-                    width: 50px;
-                    height: 50px;
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                }
-                .drag-icon:hover {
-                    cursor: pointer;
                 }
                 body {
                     margin: 0;
@@ -212,7 +209,6 @@ const open = (url, frame = true) => {
         </head>
         <body>
             <div class='draggable'>
-                <img class='drag-icon' src="https://static-00.iconduck.com/assets.00/move-icon-512x512-58ttcbzn.png"/>
             </div>
             <webview src='${url}' style='height:calc(100%);border:none;'></webview>
         </body>
