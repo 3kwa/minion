@@ -102,7 +102,7 @@ const template = [
         label: "toggle move",
         click: toggleDraggableComponent,
         accelerator: "CommandOrControl+Shift+M",
-        visible: false,
+        visible: true,
       },
       { type: "separator" },
       {
