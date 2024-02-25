@@ -35,7 +35,7 @@ const toggleDraggableComponent = () => {
 const doMinion = () => {
   const dominion = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: isMac?600:625,
     resizable: false,
     movable: false,
     webPreferences: {
