@@ -7,7 +7,10 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        iconUrl: 'https://github.com/3kwa/minion/raw/main/icons/minion.ico',
+        setupIcon: 'icons/minion.ico'
+      }
     },
     {
       name: '@electron-forge/maker-zip',
