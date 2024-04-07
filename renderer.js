@@ -2,7 +2,7 @@ __electronLog.info("dominion starting")
 // not sure how to get window inside terminal so ...
 // minion:
 const open = (url) => { window.electronAPI.open(url) };
-const shut = (url) => { window.electronAPI.shut() };
+const shut = (workspace) => { window.electronAPI.shut(workspace) };
 // workspace:
 const info = () => { return window.electronAPI.info() };
 const save = (workspace) => { window.electronAPI.save(workspace) };
@@ -14,7 +14,7 @@ const list = () => { return window.electronAPI.list() };
 // dominion:
 const help = `windows:
   [[;black;white]open] <url>          : opens a new window and loads <url>
-  [[;black;white]shut]                : closes [[i;;]all] windows
+  [[;black;white]shut] <name>/all     : shuts windows saved under <name>/[[i;;]all]
   [[;black;white]info]                : lists windows
 workspace:
   [[;black;white]save] <name>         : saves windows under <name>
@@ -34,8 +34,8 @@ jQuery(function($, undefined) {
         open: (url) => {
             open(url)
         },
-        shut: () => {
-            shut()
+        shut: (workspace) => {
+            shut(workspace)
         },
         info: function() {
             info().then((result) => {

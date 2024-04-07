@@ -133,8 +133,8 @@ app.whenReady().then(() => {
   ipcMain.on("open", (event, url) => {
     open(url);
   });
-  ipcMain.on("shut", (event) => {
-    shut();
+  ipcMain.on("shut", (event, workspace) => {
+    shut(workspace);
   });
   // workspace:
   ipcMain.handle("info", info);
@@ -223,8 +223,11 @@ const open = (url, frame = true) => {
   return minion;
 };
 
-const shut = () => {
-  const minions = BrowserWindow.getAllWindows();
+const shut = (workspace) => {
+  let minions = BrowserWindow.getAllWindows();
+  if (workspace.toLowerCase() != "all") {
+    minions = minions.filter((e) => e.workspace === workspace);
+  }
   minions.forEach((minion) => {
     if (minion.id != parseInt(process.env.DOMINION_ID)) {
       minion.close();
@@ -261,6 +264,8 @@ const save = (workspace) => {
   let counter = minions.length;
 
   minions.forEach((minion) => {
+    // Set workspace attribute so minion is shut-able
+    minion.workspace = workspace;
     // Execute JavaScript inside each webview to get the URL and scroll positions
     minion.webContents
       .executeJavaScript(
@@ -316,6 +321,7 @@ const _load = (workspace, frame) => {
     var json = JSON.parse(fs.readFileSync(filePath));
     json.forEach((data) => {
       var minion = open(data.url, frame);
+      minion.workspace = workspace; // store workspace name
       minion.setPosition(data.x, data.y, false);
       minion.setSize(data.width, data.height, false);
 
