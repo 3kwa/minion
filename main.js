@@ -175,6 +175,7 @@ const open = (url, frame = true) => {
     },
   });
 
+  minion["url"] = url;
   minion["hasFrame"] = frame;
 
   let htmlContent = `
@@ -240,7 +241,7 @@ const info = () => {
   var list = [];
   const minions = BrowserWindow.getAllWindows();
   minions.forEach((minion, index) => {
-    var url = minion.webContents.getURL();
+    var url = minion.url;
     if (minion.id != parseInt(process.env.DOMINION_ID)) {
       list.push(url);
     }
