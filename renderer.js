@@ -14,7 +14,7 @@ const list = () => { return window.electronAPI.list() };
 // dominion:
 const help = `windows:
   [[;black;white]open] <url>          : opens a new window and loads <url>
-  [[;black;white]shut] <name> / all   : shuts windows saved under <name> or [[b;;]all]
+  [[;black;white]shut] <name> / all   : shuts windows saved in <name> or [[b;;]all]
   [[;black;white]info]                : lists windows
 workspace:
   [[;black;white]save] <name>         : saves windows under <name>
