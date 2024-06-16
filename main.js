@@ -156,6 +156,12 @@ app.whenReady().then(() => {
   ipcMain.on("quit", (event) => {
     quit();
   });
+
+  for (var arg of process.argv.slice(1)) {
+    var splitArg = arg.split(' ');
+    console.log("Emitting event '" + splitArg.at(0) + "' with args '" + splitArg.slice(1) + "'");
+    ipcMain.emit(splitArg.at(0), '', ...splitArg.slice(1));
+  }
 });
 
 app.on("quit", () => {
