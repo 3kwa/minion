@@ -4,7 +4,7 @@
   "description": "minimalistic HTML/CSS/JavaScript viewer",
   "main": "main.js",
   "scripts": {
-    "start": "electron-forge start",
+    "start": "electron .",
     "watch": "nodemon --exec electron .",
     "package": "electron-forge package",
     "make": "electron-forge make"
