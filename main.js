@@ -1,3 +1,27 @@
+// CLI
+const { program } = require('commander');
+// set by the parser if a command need to be executed once dominion is up
+var EMIT = null;
+// could not find a way to have optional commands so there is a start that does nothing
+program
+  .command('start')
+  .description('open dominion ...')
+// the main reason this exists in the first place (people are lazy :P)
+// automate everything so noone has to understand anything
+program
+  .command('less <workspace>')
+  .description('load <workspace> in frameLESS mode')
+  .action((workspace) => {
+    EMIT = ["less", workspace];
+  });
+program
+  .command('load <workspace>')
+  .description('load <workspace>')
+  .action((workspace) => {
+    load(workspace);
+  });
+program.parse();
+
 const log = require("electron-log/main");
 // to get __electronLog in renderer
 log.initialize();
@@ -120,6 +144,8 @@ const menu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(menu);
 
 app.whenReady().then(() => {
+
+
   DOMINION = doMinion();
   // saving the id so we don't save the dominion window
   process.env.DOMINION_ID = DOMINION.id;
@@ -157,11 +183,11 @@ app.whenReady().then(() => {
     quit();
   });
 
-  for (var arg of process.argv.slice(1)) {
-    var splitArg = arg.split(' ');
-    console.log("Emitting event '" + splitArg.at(0) + "' with args '" + splitArg.slice(1) + "'");
-    ipcMain.emit(splitArg.at(0), '', ...splitArg.slice(1));
+  // EMIT set by the CLI parser
+  if (EMIT !== null) {
+    ipcMain.emit(EMIT.at(0), '', EMIT.at(1));
   }
+
 });
 
 app.on("quit", () => {
