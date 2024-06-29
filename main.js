@@ -2,25 +2,31 @@
 const { program } = require('commander');
 // set by the parser if a command need to be executed once dominion is up
 var EMIT = null;
-// could not find a way to have optional commands so there is a start that does nothing
-program
-  .command('start')
-  .description('open dominion ...')
 // the main reason this exists in the first place (people are lazy :P)
 // automate everything so noone has to understand anything
-program
-  .command('less <workspace>')
-  .description('load <workspace> in frameLESS mode')
-  .action((workspace) => {
-    EMIT = ["less", workspace];
-  });
 program
   .command('load <workspace>')
   .description('load <workspace>')
   .action((workspace) => {
-    load(workspace);
+    EMIT = ["load", workspace];
   });
-program.parse();
+program
+  .command('less <workspace>')
+  .description('load <workspace> in frameless mode')
+  .action((workspace) => {
+    EMIT = ["less", workspace];
+  });
+
+program.exitOverride();
+try {
+  program.parse(process.argv);
+} catch (err) {
+  if ((process.argv.length == 3) && (process.argv.at(2) === "help")) process.exit(0);
+  if (process.argv.length > 2) {
+      program.outputHelp();
+      process.exit(0);
+  }
+}
 
 const log = require("electron-log/main");
 // to get __electronLog in renderer
