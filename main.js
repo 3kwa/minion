@@ -61,7 +61,7 @@ const doMinion = () => {
     width: 800,
     height: isMac?600:625,
     resizable: false,
-    movable: false,
+    movable: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
