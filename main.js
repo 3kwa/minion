@@ -19,10 +19,20 @@ program
 
 program.exitOverride();
 try {
-  program.parse(process.argv);
+  program.parse();
 } catch (err) {
-  if ((process.argv.length == 3) && (process.argv.at(2) === "help")) process.exit(0);
-  if (process.argv.length > 2) {
+  var error = true;
+  // not perfect
+  if (process.argv.at(process.argv.length - 1) === "help") process.exit(0);
+  // dev simple start
+  if ((process.argv.at(process.argv.length - 1) === ".") && (process.argv.length == 2)) {
+    error = false
+  }
+  // release simple start
+  if ((process.argv.at(process.argv.length - 1).endsWith("minion")) && (process.argv.length == 1)) {
+    error = false
+  }
+  if (error) {
       program.outputHelp();
       process.exit(0);
   }
