@@ -33,7 +33,13 @@ try {
     error = false
   }
   // release simple start
-  if ((process.argv.at(process.argv.length - 1).endsWith("minion")) && (process.argv.length == 1)) {
+  if ((
+    // MacOS
+    (process.argv.at(process.argv.length - 1).endsWith("minion"))
+    ||
+    // Windows
+    (process.argv.at(process.argv.length - 1).endsWith("minion.exe"))
+   ) && (process.argv.length == 1)) {
     error = false
   }
   if (error) {
