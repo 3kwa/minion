@@ -2,6 +2,7 @@
 const { program } = require('commander');
 // set by the parser if a command need to be executed once dominion is up
 var EMIT = null;
+program.name("minion");
 // the main reason this exists in the first place (people are lazy :P)
 // automate everything so noone has to understand anything
 program
