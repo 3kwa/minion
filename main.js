@@ -19,7 +19,11 @@ program
 
 program.exitOverride();
 try {
+  // silencing the auto help output on parse failure
+  _was = process.stderr.write;
+  process.stderr.write = (str) => {};
   program.parse();
+  process.stderr.write = _was
 } catch (err) {
   var error = true;
   // not perfect
