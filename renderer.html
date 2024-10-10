@@ -1,35 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>dominion</title>
-        <script src="node_modules/jquery/dist/jquery.min.js"></script>
-        <script src="node_modules/jquery.terminal/js/jquery.terminal.min.js"></script>
-        <link rel="stylesheet" href="node_modules/jquery.terminal/css/jquery.terminal.min.css" />
-        <style>
-            html, body {
-                margin: 0;
-                height: 100%;
-                overflow-x: hidden;
-            }
-            #footer {
-                position: absolute;
-                bottom: 0;
-                width: 100%;
-                text-align: center;
-                font-family: "Courier New", courier, monospace;
-                padding: .3em;
-                background-color: beige;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="terminal"></div>
-        <div id="footer">
-            node: <span id="node-version"></span>
-            chromium: <span id="chrome-version"></span>
-            electron: <span id="electron-version"></span>
-        </div>
-        <script src="./renderer.js"></script>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>dominion</title>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/jquery.terminal/js/jquery.terminal.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="node_modules/jquery.terminal/css/jquery.terminal.min.css"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow-x: hidden;
+      }
+      #footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        font-family: "Courier New", courier, monospace;
+        padding: 0.3em;
+        background-color: beige;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="terminal"></div>
+    <div id="footer">
+      node: <span id="node-version"></span> chromium:
+      <span id="chrome-version"></span> electron:
+      <span id="electron-version"></span>
+    </div>
+    <script src="./renderer.js"></script>
+  </body>
 </html>

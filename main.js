@@ -1,19 +1,19 @@
 // CLI
-const { program } = require('commander');
+const { program } = require("commander");
 // set by the parser if a command need to be executed once dominion is up
 var EMIT = null;
 program.name("minion");
 // the main reason this exists in the first place (people are lazy :P)
 // automate everything so noone has to understand anything
 program
-  .command('load <workspace>')
-  .description('load <workspace>')
+  .command("load <workspace>")
+  .description("load <workspace>")
   .action((workspace) => {
     EMIT = ["load", workspace];
   });
 program
-  .command('less <workspace>')
-  .description('load <workspace> in frameless mode')
+  .command("less <workspace>")
+  .description("load <workspace> in frameless mode")
   .action((workspace) => {
     EMIT = ["less", workspace];
   });
@@ -24,28 +24,31 @@ try {
   _was = process.stderr.write;
   process.stderr.write = (str) => {};
   program.parse();
-  process.stderr.write = _was
+  process.stderr.write = _was;
 } catch (err) {
   var error = true;
   // not perfect
   if (process.argv.at(process.argv.length - 1) === "help") process.exit(0);
   // dev simple start
-  if ((process.argv.at(process.argv.length - 1) === ".") && (process.argv.length == 2)) {
-    error = false
+  if (
+    process.argv.at(process.argv.length - 1) === "." &&
+    process.argv.length == 2
+  ) {
+    error = false;
   }
   // release simple start
-  if ((
+  if (
     // MacOS
-    (process.argv.at(process.argv.length - 1).endsWith("minion"))
-    ||
-    // Windows
-    (process.argv.at(process.argv.length - 1).endsWith("minion.exe"))
-   ) && (process.argv.length == 1)) {
-    error = false
+    (process.argv.at(process.argv.length - 1).endsWith("minion") ||
+      // Windows
+      process.argv.at(process.argv.length - 1).endsWith("minion.exe")) &&
+    process.argv.length == 1
+  ) {
+    error = false;
   }
   if (error) {
-      program.outputHelp();
-      process.exit(0);
+    program.outputHelp();
+    process.exit(0);
   }
 }
 
@@ -62,31 +65,31 @@ const fs = require("fs");
 let isMoveEnabled = false;
 
 const toggleDraggableComponent = () => {
-    isMoveEnabled = !isMoveEnabled; // Toggle the move state
-    const minions = BrowserWindow.getAllWindows();
-    minions.forEach((minion) => {
-      if (minion.hasFrame !== undefined && !minion.hasFrame) {
-        if (isMoveEnabled) {
-            minion.webContents.insertCSS(`
+  isMoveEnabled = !isMoveEnabled; // Toggle the move state
+  const minions = BrowserWindow.getAllWindows();
+  minions.forEach((minion) => {
+    if (minion.hasFrame !== undefined && !minion.hasFrame) {
+      if (isMoveEnabled) {
+        minion.webContents.insertCSS(`
               .draggable {
                 display: block !important;
               }
             `);
-          } else {
-            minion.webContents.insertCSS(`
+      } else {
+        minion.webContents.insertCSS(`
               .draggable {
                 display: none !important;
               }
             `);
-          }
       }
-    });
-}
+    }
+  });
+};
 
 const doMinion = () => {
   const dominion = new BrowserWindow({
     width: 800,
-    height: isMac?600:625,
+    height: isMac ? 600 : 625,
     resizable: false,
     movable: true,
     webPreferences: {
@@ -171,8 +174,6 @@ const menu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(menu);
 
 app.whenReady().then(() => {
-
-
   DOMINION = doMinion();
   // saving the id so we don't save the dominion window
   process.env.DOMINION_ID = DOMINION.id;
@@ -212,9 +213,8 @@ app.whenReady().then(() => {
 
   // EMIT set by the CLI parser
   if (EMIT !== null) {
-    ipcMain.emit(EMIT.at(0), '', EMIT.at(1));
+    ipcMain.emit(EMIT.at(0), "", EMIT.at(1));
   }
-
 });
 
 app.on("quit", () => {
@@ -317,7 +317,7 @@ const save = (workspace) => {
   const filePath = path.join(data, "workspaces", `${workspace}.json`);
   var list = [];
   const minions = BrowserWindow.getAllWindows().filter(
-    (minion) => minion.id !== parseInt(process.env.DOMINION_ID)
+    (minion) => minion.id !== parseInt(process.env.DOMINION_ID),
   );
 
   // Use a counter to handle asynchronous execution
@@ -331,7 +331,7 @@ const save = (workspace) => {
       .executeJavaScript(
         `
             document.querySelector('webview').executeJavaScript("Promise.resolve({ url: location.href, scrollX: window.scrollX, scrollY: window.scrollY })")
-        `
+        `,
       )
       .then((result) => {
         var data = {
@@ -393,7 +393,7 @@ const _load = (workspace, frame) => {
                     document.querySelector('webview').executeJavaScript("window.scrollTo(${
                       data.scrollX || 0
                     }, ${data.scrollY || 0})")
-                `
+                `,
           )
           .catch((err) => {
             console.error("Error setting scroll position: ", err);
