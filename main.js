@@ -61,6 +61,16 @@ const { app, BrowserWindow, ipcMain, Menu } = require("electron");
 const path = require("path");
 const fs = require("fs");
 
+// History
+
+const goBack = () => {
+  BrowserWindow.getFocusedWindow().webContents.navigationHistory.goBack();
+};
+
+const goForward = () => {
+  BrowserWindow.getFocusedWindow().webContents.navigationHistory.goForward();
+};
+
 // Global variable to track the visibility state of the draggable div
 let isMoveEnabled = false;
 
@@ -143,6 +153,19 @@ const template = [
       { role: "resetZoom" },
       { role: "zoomIn" },
       { role: "zoomOut" },
+    ],
+  },
+  // browse
+  {
+    label: "browse",
+    submenu: [
+      { label: "back", click: goBack, accelerator: "Command+[", visible: true },
+      {
+        label: "forward",
+        click: goForward,
+        accelerator: "Command+]",
+        visible: true,
+      },
     ],
   },
   // window
@@ -274,8 +297,29 @@ const open = (url, frame = true) => {
         </body>
         </html>`;
 
-  minion.loadURL(`data:text/html,${encodeURIComponent(htmlContent)}`);
-
+  // minion.loadURL(`data:text/html,${encodeURIComponent(htmlContent)}`);
+  minion.loadURL(url);
+  minion.webContents.on("did-finish-load", () => {
+    minion.webContents.insertCSS(`
+      .minion_draggable {
+        -webkit-app-region: drag;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 10px,
+          rgba(0, 0, 0, 0.2) 10px,
+          rgba(0, 0, 0, 0.2) 20px
+        );
+        display: none;
+        text-align:center
+    }`);
+    console.log("maybe !!!");
+  });
   minion.webContents.on("will-prevent-unload", (event) => {
     event.preventDefault();
   });
