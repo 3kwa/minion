@@ -19,11 +19,11 @@
     "@electron-forge/maker-squirrel": "^7.5.0",
     "@electron-forge/maker-zip": "^7.5.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
-    "electron": "^32.2.0",
+    "electron": "^33.3.1",
     "nodemon": "^3.0.2"
   },
   "dependencies": {
-    "commander": "^12.1.0",
+    "commander": "^13.0.0",
     "electron-log": "^5.0.3",
     "electron-squirrel-startup": "^1.0.0",
     "jquery.terminal": "^2.37.2"
