@@ -334,17 +334,17 @@ const save = (workspace) => {
   let counter = minions.length;
 
   minions.forEach((minion) => {
-    // Set workspace attribute so minion is shut-able
+    // set workspace attribute so minion is shut-able
     minion.workspace = workspace;
-    // Execute JavaScript inside each webview to get the URL and scroll positions
+    // execute JavaScript inside each minion to get the URL and scroll positions
     minion.webContents
       .executeJavaScript(
-        `Promise.resolve({ url: location.href, scrollX: window.scrollX, scrollY: window.scrollY })`
+        `Promise.resolve({ url: location.href, scrollX: window.scrollX, scrollY: window.scrollY })`,
       )
       .then((result) => {
         var data = {
           id: minion.id,
-          url: result.url, // URL from within the webview
+          url: result.url,
           x: minion.getPosition()[0],
           y: minion.getPosition()[1],
           width: minion.getSize()[0],
@@ -362,7 +362,7 @@ const save = (workspace) => {
         }
       })
       .catch((err) => {
-        console.error("Error retrieving webview data: ", err);
+        console.error("Error retrieving data: ", err);
         counter--;
       });
   });
@@ -393,18 +393,14 @@ const _load = (workspace, frame) => {
       minion.setPosition(data.x, data.y, false);
       minion.setSize(data.width, data.height, false);
 
-      // Set scroll positions after the webview has finished loading
+      // set scroll positions
       minion.webContents.once("did-finish-load", () => {
         minion.webContents
           .executeJavaScript(
-            `
-                    document.querySelector('webview').executeJavaScript("window.scrollTo(${
-                      data.scrollX || 0
-                    }, ${data.scrollY || 0})")
-                `,
+            `window.scrollTo(${data.scrollX || 0}, ${data.scrollY || 0})`,
           )
           .catch((err) => {
-            console.error("Error setting scroll position: ", err);
+            console.error("error setting scroll position: ", err);
           });
       });
     });
