@@ -166,15 +166,15 @@ const template = [
       {
         label: "location",
         click: toggleLocation,
-        accelerator: "Command+L",
+        accelerator: "CommandOrControl+L",
         visible: true,
       },
       { type: "separator" },
-      { label: "back", click: goBack, accelerator: "Command+[", visible: true },
+      { label: "back", click: goBack, accelerator: "CommandOrControl+[", visible: true },
       {
         label: "forward",
         click: goForward,
-        accelerator: "Command+]",
+        accelerator: "CommandOrControl+]",
         visible: true,
       },
       { type: "separator" },
@@ -277,7 +277,6 @@ const open = (url, frame = true) => {
     },
   });
 
-  minion["url"] = url;
   minion["hasFrame"] = frame;
 
   minion.loadURL(url);
@@ -366,7 +365,7 @@ const info = () => {
   var list = [];
   const minions = BrowserWindow.getAllWindows();
   minions.forEach((minion, index) => {
-    var url = minion.url;
+    var url = minion.webContents.getURL();
     if (minion.id != parseInt(process.env.DOMINION_ID)) {
       list.push(url);
     }
