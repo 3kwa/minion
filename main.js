@@ -73,24 +73,19 @@ const goForward = () => {
 
 const toggleLocation = () => {
   const minion = BrowserWindow.getFocusedWindow();
-  if (!minion.__location) {
-    minion.webContents.executeJavaScript(
-      `document.querySelector('#minion_location > input[type="text"]').value = location.href;`,
-    );
-    minion.webContents.insertCSS(`
-      #minion_location {
-        display: block !important;
-      }
-    `);
-    minion.__location = true;
-  } else {
-    minion.webContents.insertCSS(`
-      #minion_location {
-        display: none !important;
-      }
-    `);
-    minion.__location = false;
-  }
+  minion.webContents.executeJavaScript(`
+    var visible = document.querySelector('#minion_location').style.display === 'block';
+    var input = document.querySelector('#minion_location input');
+    if (!visible) {
+      document.querySelector('#minion_location').style.display = 'block';
+      input.value = location.href;
+      input.focus();
+      input.select();
+    } else {
+      input.blur();
+      document.querySelector('#minion_location').style.display = 'none';
+    }
+  `);
 };
 
 // Global variable to track the visibility state of the draggable div
@@ -168,25 +163,13 @@ const template = [
   {
     label: "view",
     submenu: [
-      { role: "reload" },
-      { role: "forceReload" },
-      { role: "toggleDevTools" },
-      { type: "separator" },
-      { role: "resetZoom" },
-      { role: "zoomIn" },
-      { role: "zoomOut" },
-    ],
-  },
-  // browse
-  {
-    label: "browse",
-    submenu: [
       {
         label: "location",
         click: toggleLocation,
         accelerator: "Command+L",
         visible: true,
       },
+      { type: "separator" },
       { label: "back", click: goBack, accelerator: "Command+[", visible: true },
       {
         label: "forward",
@@ -194,6 +177,14 @@ const template = [
         accelerator: "Command+]",
         visible: true,
       },
+      { type: "separator" },
+      { role: "reload" },
+      { role: "forceReload" },
+      { role: "toggleDevTools" },
+      { type: "separator" },
+      { role: "resetZoom" },
+      { role: "zoomIn" },
+      { role: "zoomOut" },
     ],
   },
   // window
@@ -355,7 +346,6 @@ const open = (url, frame = true) => {
   minion.webContents.on("will-prevent-unload", (event) => {
     event.preventDefault();
   });
-  minion.__location = false;
   return minion;
 };
 
