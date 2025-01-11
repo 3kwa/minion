@@ -285,7 +285,6 @@ const open = (url, frame = true) => {
     z-index: 1000000;
   \`;
   document.body.appendChild(draggableDiv);`);
-    console.log("maybe !!!");
   });
   minion.webContents.on("will-prevent-unload", (event) => {
     event.preventDefault();
@@ -340,9 +339,7 @@ const save = (workspace) => {
     // Execute JavaScript inside each webview to get the URL and scroll positions
     minion.webContents
       .executeJavaScript(
-        `
-            document.querySelector('webview').executeJavaScript("Promise.resolve({ url: location.href, scrollX: window.scrollX, scrollY: window.scrollY })")
-        `,
+        `Promise.resolve({ url: location.href, scrollX: window.scrollX, scrollY: window.scrollY })`
       )
       .then((result) => {
         var data = {
@@ -361,7 +358,7 @@ const save = (workspace) => {
         // Decrement counter and write to file when all windows are processed
         counter--;
         if (counter === 0) {
-          fs.writeFileSync(filePath, JSON.stringify(list));
+          fs.writeFileSync(filePath, JSON.stringify(list, null, 2));
         }
       })
       .catch((err) => {
