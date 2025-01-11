@@ -16,9 +16,11 @@ Just enough HTML, CSS and JavaScript wrapped in an [electron](https://www.electr
 
 ## installation
 
-MacOS only at this stage, but since `minion` is built using [electron](https://www.electronjs.org) should be relatively straightforward cut releases for Windows and Linux - PR welcome!
+MacOS and Windows only at this stage, but since `minion` is built using [electron](https://www.electronjs.org) should be relatively straightforward cut releases for Linux - PR welcome!
 
-### [brew](https://brew.sh) [tap](https://github.com/3kwa/homebrew-minion)
+### MacOS
+
+#### [brew](https://brew.sh) [tap](https://github.com/3kwa/homebrew-minion)
 
 Since `v1.0.5`, first (and only once):
 
@@ -30,14 +32,22 @@ Then:
 
 The `--no-quarantine` is necessary _for now_.
 
-### [Releases](https://github.com/3kwa/minion/releases)
-
 #### DMG
 
-Since `v1.0.5` releases include a DMG file. Download, open, drag and your are done.
+Since `v1.0.5` [releases](https://github.com/3kwa/minion/releases) include a DMG file. Download, open, drag and your are done.
 
 #### ZIP
 
-The old school way, since `v1.0.0`, releases include a ZIP file. Download, unzip and mess around.
+The old school way, since `v1.0.0`, [releases](https://github.com/3kwa/minion/releases) include a ZIP file. Download, unzip and mess around.
 
     rm -rf /Applications/minion.app && mv <unzipped>/minion.app /Applications/minion.app
+
+### Windows
+
+#### Setup.exe
+
+Since `v1.0.7` [releases](https://github.com/3kwa/minion/releases) include a Setupe.exe installer. It places the executable in an *unusual* location `C:\Users\<user>\AppData\Local\Programs\`.
+
+#### [nuget](https://www.nuget.org)
+
+Since `v1.0.7` in [releases](https://github.com/3kwa/minion/releases) ... not sure what to do with it.
