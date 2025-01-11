@@ -81,13 +81,13 @@ const toggleDraggableComponent = () => {
     if (minion.hasFrame !== undefined && !minion.hasFrame) {
       if (isMoveEnabled) {
         minion.webContents.insertCSS(`
-              .draggable {
+              #minion_draggable {
                 display: block !important;
               }
             `);
       } else {
         minion.webContents.insertCSS(`
-              .draggable {
+              #minion_draggable {
                 display: none !important;
               }
             `);
@@ -254,70 +254,37 @@ const open = (url, frame = true) => {
       nodeIntegration: true,
       contextIsolation: false,
       webviewTag: true,
+      allowRunningInsecureContent: true,
     },
   });
 
   minion["url"] = url;
   minion["hasFrame"] = frame;
 
-  let htmlContent = `
-        <html>
-        <head>
-            <style>
-                .draggable {
-                    -webkit-app-region: drag;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: repeating-linear-gradient(
-                      45deg,
-                      transparent,
-                      transparent 10px,
-                      rgba(0, 0, 0, 0.2) 10px,
-                      rgba(0, 0, 0, 0.2) 20px
-                    );
-                    display: none;
-                    text-align:center
-                }
-                body {
-                    margin: 0;
-                }
-                webview {
-                    width: 100%;
-                    height: 100%;
-                }
-            </style>
-        </head>
-        <body>
-            <div class='draggable'>
-            </div>
-            <webview src='${url}' style='height:calc(100%);border:none;'></webview>
-        </body>
-        </html>`;
-
-  // minion.loadURL(`data:text/html,${encodeURIComponent(htmlContent)}`);
   minion.loadURL(url);
   minion.webContents.on("did-finish-load", () => {
-    minion.webContents.insertCSS(`
-      .minion_draggable {
-        -webkit-app-region: drag;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: repeating-linear-gradient(
-          45deg,
-          transparent,
-          transparent 10px,
-          rgba(0, 0, 0, 0.2) 10px,
-          rgba(0, 0, 0, 0.2) 20px
-        );
-        display: none;
-        text-align:center
-    }`);
+    minion.webContents.executeJavaScript(`
+  const draggableDiv = document.createElement('div');
+  draggableDiv.id = 'minion_draggable';
+  draggableDiv.style.cssText = \`
+    -webkit-app-region: drag;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(0, 0, 0, 0.2) 10px,
+      rgba(0, 0, 0, 0.2) 20px
+    );
+    display: none;
+    text-align: center;
+    z-index: 1000000;
+  \`;
+  document.body.appendChild(draggableDiv);`);
     console.log("maybe !!!");
   });
   minion.webContents.on("will-prevent-unload", (event) => {
