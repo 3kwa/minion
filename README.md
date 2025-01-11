@@ -46,7 +46,7 @@ The old school way, since `v1.0.0`, [releases](https://github.com/3kwa/minion/re
 
 #### Setup.exe
 
-Since `v1.0.7` [releases](https://github.com/3kwa/minion/releases) include a Setupe.exe installer. It places the executable in an *unusual* location `C:\Users\<user>\AppData\Local\Programs\`.
+Since `v1.0.7` [releases](https://github.com/3kwa/minion/releases) include a Setupe.exe installer. It places the executable in an _unusual_ location `C:\Users\<user>\AppData\Local\Programs\`.
 
 #### [nuget](https://www.nuget.org)
 

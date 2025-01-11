@@ -170,7 +170,12 @@ const template = [
         visible: true,
       },
       { type: "separator" },
-      { label: "back", click: goBack, accelerator: "CommandOrControl+[", visible: true },
+      {
+        label: "back",
+        click: goBack,
+        accelerator: "CommandOrControl+[",
+        visible: true,
+      },
       {
         label: "forward",
         click: goForward,
