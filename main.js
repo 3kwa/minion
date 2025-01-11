@@ -71,6 +71,28 @@ const goForward = () => {
   BrowserWindow.getFocusedWindow().webContents.navigationHistory.goForward();
 };
 
+const toggleLocation = () => {
+  const minion = BrowserWindow.getFocusedWindow();
+  if (!minion.__location) {
+    minion.webContents.executeJavaScript(
+      `document.querySelector('#minion_location > input[type="text"]').value = location.href;`,
+    );
+    minion.webContents.insertCSS(`
+      #minion_location {
+        display: block !important;
+      }
+    `);
+    minion.__location = true;
+  } else {
+    minion.webContents.insertCSS(`
+      #minion_location {
+        display: none !important;
+      }
+    `);
+    minion.__location = false;
+  }
+};
+
 // Global variable to track the visibility state of the draggable div
 let isMoveEnabled = false;
 
@@ -159,6 +181,12 @@ const template = [
   {
     label: "browse",
     submenu: [
+      {
+        label: "location",
+        click: toggleLocation,
+        accelerator: "Command+L",
+        visible: true,
+      },
       { label: "back", click: goBack, accelerator: "Command+[", visible: true },
       {
         label: "forward",
@@ -284,12 +312,50 @@ const open = (url, frame = true) => {
     text-align: center;
     z-index: 1000000;
   \`;
-  document.body.appendChild(draggableDiv);`);
+  document.body.appendChild(draggableDiv);
+  // Create and add the location div with URL input
+  const locationDiv = document.createElement('div');
+  locationDiv.id = 'minion_location';
+  locationDiv.style.cssText = \`
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 5px;
+    background: white;
+    display: none;
+    z-index: 1000001;
+    -webkit-app-region: no-drag;
+  \`;
+
+  const urlInput = document.createElement('input');
+  urlInput.type = 'text';
+  urlInput.value = window.location.href;
+  urlInput.style.cssText = \`
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    -webkit-app-region: no-drag;
+  \`;
+
+  urlInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      let url = urlInput.value;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+      window.location.href = url;
+    }
+  });
+
+  locationDiv.appendChild(urlInput);
+  document.body.appendChild(locationDiv);`);
   });
   minion.webContents.on("will-prevent-unload", (event) => {
     event.preventDefault();
   });
-
+  minion.__location = false;
   return minion;
 };
 
