@@ -21,7 +21,8 @@ class Minion {
     
     // Add view to window and set bounds
     this.window.contentView.addChildView(this.view);
-    this._updateViewBounds();
+    // Set view to fill the entire content area
+    this.window.setContentView(this.view);
     
     // Proxy common properties
     this.id = this.window.id;
@@ -57,8 +58,8 @@ class Minion {
   
   // Helper method to update view bounds
   _updateViewBounds() {
-    const bounds = this.window.getBounds();
-    this.view.setBounds({ x: 0, y: 0, width: bounds.width, height: bounds.height });
+    const contentBounds = this.window.getContentBounds();
+    this.view.setBounds({ x: 0, y: 0, width: contentBounds.width, height: contentBounds.height });
   }
 
 

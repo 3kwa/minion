@@ -58,21 +58,22 @@ log.initialize();
 log.info("minion starting");
 
 const { app, BrowserWindow, ipcMain, Menu } = require("electron");
+const { Minion } = require("./minion.js");
 const path = require("path");
 const fs = require("fs");
 
 // History
 
 const goBack = () => {
-  BrowserWindow.getFocusedWindow().webContents.navigationHistory.goBack();
+  Minion.getFocusedMinion().webContents.navigationHistory.goBack();
 };
 
 const goForward = () => {
-  BrowserWindow.getFocusedWindow().webContents.navigationHistory.goForward();
+  Minion.getFocusedWindow().webContents.navigationHistory.goForward();
 };
 
 const toggleLocation = () => {
-  const minion = BrowserWindow.getFocusedWindow();
+  const minion = Minion.getFocusedMinion();
   minion.webContents.executeJavaScript(`
     var visible = document.querySelector('#minion_location').style.display === 'block';
     var input = document.querySelector('#minion_location input');
@@ -93,7 +94,7 @@ let isMoveEnabled = false;
 
 const toggleDraggableComponent = () => {
   isMoveEnabled = !isMoveEnabled; // Toggle the move state
-  const minions = BrowserWindow.getAllWindows();
+  const minions = Minion.getAllMinions();
   minions.forEach((minion) => {
     if (minion.hasFrame !== undefined && !minion.hasFrame) {
       if (isMoveEnabled) {
@@ -269,7 +270,7 @@ app.on("quit", () => {
 });
 
 const open = (url, frame = true) => {
-  const minion = new BrowserWindow({
+  const minion = new Minion({
     width: 400,
     height: 300,
     frame: frame,
@@ -354,7 +355,7 @@ const open = (url, frame = true) => {
 };
 
 const shut = (workspace) => {
-  let minions = BrowserWindow.getAllWindows();
+  let minions = Minion.getAllMinions();
   if (workspace.toLowerCase() != "all") {
     minions = minions.filter((e) => e.workspace === workspace);
   }
@@ -368,7 +369,7 @@ const shut = (workspace) => {
 
 const info = () => {
   var list = [];
-  const minions = BrowserWindow.getAllWindows();
+  const minions = Minion.getAllMinions();
   minions.forEach((minion, index) => {
     var url = minion.webContents.getURL();
     if (minion.id != parseInt(process.env.DOMINION_ID)) {
@@ -386,7 +387,7 @@ const save = (workspace) => {
   }
   const filePath = path.join(data, "workspaces", `${workspace}.json`);
   var list = [];
-  const minions = BrowserWindow.getAllWindows().filter(
+  const minions = Minion.getAllMinions().filter(
     (minion) => minion.id !== parseInt(process.env.DOMINION_ID),
   );
 
