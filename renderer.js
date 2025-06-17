@@ -32,6 +32,7 @@ const list = () => {
 // dominion:
 const help = `windows:
   [[;black;white]open] <url>          : opens a new window and loads <url>
+  [[;black;white]opin] <id> <url>     : loads <url> in window <id>
   [[;black;white]shut] <name> / all   : shuts windows saved in <name> or [[b;;]all]
   [[;black;white]info]                : lists windows
 workspace:
@@ -125,7 +126,7 @@ ${help}`,
         terminal.echo(
           `[[;red;]ERR [[b;;]${command}] not in ` +
             $.terminal.escape_formatting(
-              "[open, shut, info, save, desc, load, less, dele, list, ",
+              "[open, opin, shut, info, save, desc, load, less, dele, list, ",
             ) +
             "[[ub;;]help], quit" +
             $.terminal.escape_formatting("]") +
