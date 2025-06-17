@@ -69,7 +69,7 @@ const goBack = () => {
 };
 
 const goForward = () => {
-  Minion.getFocusedWindow().webContents.navigationHistory.goForward();
+  Minion.getFocusedMinion().webContents.navigationHistory.goForward();
 };
 
 const toggleLocation = () => {
