@@ -7,29 +7,29 @@ class Minion {
   constructor(options = {}) {
     // Extract webPreferences for the view
     const { webPreferences, ...windowOptions } = options;
-    
+
     // Create BaseWindow with window options
     this.window = new BaseWindow(windowOptions);
-    
+
     // Store properties for compatibility
     this.hasFrame = options.frame !== false;
-    
+
     // Create initial WebContentsView
     this.view = new WebContentsView({
-      webPreferences: webPreferences || {}
+      webPreferences: webPreferences || {},
     });
-    
+
     // Add view to window and set bounds
     this.window.contentView.addChildView(this.view);
     // Set view to fill the entire content area
     this.window.setContentView(this.view);
-    
+
     // Proxy common properties
     this.id = this.window.id;
     this.webContents = this.view.webContents;
 
     // Handle window resize to update view bounds
-    this.window.on('resized', () => {
+    this.window.on("resized", () => {
       this._updateViewBounds();
     });
 
@@ -37,11 +37,11 @@ class Minion {
     Minion.#instances.push(this);
 
     // Track focus changes
-    this.window.on('focus', () => {
+    this.window.on("focus", () => {
       Minion.#focusedInstance = this;
     });
 
-    this.window.on('closed', () => {
+    this.window.on("closed", () => {
       const index = Minion.#instances.indexOf(this);
       if (index !== -1) {
         Minion.#instances.splice(index, 1);
@@ -55,13 +55,17 @@ class Minion {
   loadURL(url) {
     return this.view.webContents.loadURL(url);
   }
-  
+
   // Helper method to update view bounds
   _updateViewBounds() {
     const contentBounds = this.window.getContentBounds();
-    this.view.setBounds({ x: 0, y: 0, width: contentBounds.width, height: contentBounds.height });
+    this.view.setBounds({
+      x: 0,
+      y: 0,
+      width: contentBounds.width,
+      height: contentBounds.height,
+    });
   }
-
 
   // Event proxy methods
   on(eventName, listener) {
