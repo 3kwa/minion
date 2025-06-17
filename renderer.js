@@ -60,8 +60,10 @@ jQuery(function ($, undefined) {
       },
       info: function () {
         info().then((result) => {
-          result.forEach((url) => {
-            this.echo(`  [[;black;white]${url}]`);
+          result.forEach((minion) => {
+            this.echo(
+              `  [[;black;white] ${minion.id.toString().padStart(2, " ")} ] ${minion.urls.join(" + ")}`,
+            );
           });
         });
       },
