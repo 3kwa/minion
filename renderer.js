@@ -35,7 +35,7 @@ const list = () => {
 // dominion:
 const help = `windows:
   [[;black;white]open] <url>          : opens a new window and loads <url>
-  [[;black;white]opin] <id> <url>     : loads <url> in window <id>
+  [[;black;white]opin] <url> <id>     : loads <url> in window <id>
   [[;black;white]shut] <name> / all   : shuts windows saved in <name> or [[b;;]all]
   [[;black;white]info]                : lists windows
 workspace:

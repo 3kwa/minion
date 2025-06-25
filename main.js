@@ -89,11 +89,11 @@ const toggleLocation = () => {
   `);
 };
 
-// Global variable to track the visibility state of the draggable div
+// global variable to track the visibility state of the draggable div
 let isMoveEnabled = false;
 
 const toggleDraggableComponent = () => {
-  isMoveEnabled = !isMoveEnabled; // Toggle the move state
+  isMoveEnabled = !isMoveEnabled; // toggle the move state
   const minions = Minion.getAllMinions();
   minions.forEach((minion) => {
     if (minion.hasFrame !== undefined && !minion.hasFrame) {
@@ -382,11 +382,14 @@ const open = (url, frame = true) => {
 
 const shut = (workspace) => {
   let minions = Minion.getAllMinions();
+    console.log(minions.length);
   if (workspace.toLowerCase() != "all") {
     minions = minions.filter((e) => e.workspace === workspace);
   }
+    console.log(minions.length);
   minions.forEach((minion) => {
-      minion.close();
+    console.log(minions.url);
+    minion.close();
   });
   isMoveEnabled = false; // reset move enabled
 };
@@ -405,7 +408,7 @@ const info = () => {
   var list = [];
   const minions = Minion.getAllMinions();
   minions.forEach((minion, index) => {
-    var urls = minion.views.map(view => view.webContents.getURL());
+    var urls = minion.views.map((view) => view.webContents.getURL());
     list.push({
       id: minion.id,
       urls: urls,
@@ -414,54 +417,56 @@ const info = () => {
   return list;
 };
 
-const save = (workspace) => {
+const save = async (workspace) => {
   const data = app.getPath("userData");
   const workspaces = path.join(data, "workspaces");
   if (!fs.existsSync(workspaces)) {
     fs.mkdirSync(workspaces);
   }
   const filePath = path.join(data, "workspaces", `${workspace}.json`);
-  var list = [];
-  const minions = Minion.getAllMinions().filter(
-    (minion) => minion.id !== parseInt(process.env.DOMINION_ID),
-  );
+  const minions = Minion.getAllMinions();
 
-  // Use a counter to handle asynchronous execution
-  let counter = minions.length;
-
-  minions.forEach((minion) => {
+  const minionPromises = minions.map(async (minion) => {
     // set workspace attribute so minion is shut-able
     minion.workspace = workspace;
-    // execute JavaScript inside each minion to get the URL and scroll positions
-    minion.webContents
-      .executeJavaScript(
-        `Promise.resolve({ url: location.href, scrollX: window.scrollX, scrollY: window.scrollY })`,
-      )
-      .then((result) => {
-        var data = {
-          id: minion.id,
+
+    // collect data from each view
+    const viewPromises = minion.views.map(async (view) => {
+      try {
+        const result = await view.webContents.executeJavaScript(
+          `Promise.resolve({ url: location.href, scrollX: window.scrollX, scrollY: window.scrollY })`,
+        );
+
+        return {
           url: result.url,
-          x: minion.getPosition()[0],
-          y: minion.getPosition()[1],
-          width: minion.getSize()[0],
-          height: minion.getSize()[1],
-          zoomFactor: minion.webContents.getZoomFactor(),
           scrollX: result.scrollX,
           scrollY: result.scrollY,
+          zoomFactor: view.webContents.getZoomFactor(),
         };
-        list.push(data);
+      } catch (err) {
+        console.error("Error retrieving view data: ", err);
+      }
+    });
 
-        // Decrement counter and write to file when all windows are processed
-        counter--;
-        if (counter === 0) {
-          fs.writeFileSync(filePath, JSON.stringify(list, null, 2));
-        }
-      })
-      .catch((err) => {
-        console.error("Error retrieving data: ", err);
-        counter--;
-      });
+    const views = await Promise.all(viewPromises);
+
+    return {
+      id: minion.id,
+      x: minion.getPosition()[0],
+      y: minion.getPosition()[1],
+      width: minion.getSize()[0],
+      height: minion.getSize()[1],
+      activeViewIndex: minion.activeViewIndex,
+      views: views,
+    };
   });
+
+  try {
+    const list = await Promise.all(minionPromises);
+    fs.writeFileSync(filePath, JSON.stringify(list, null, 2));
+  } catch (err) {
+    console.error("Error saving workspace: ", err);
+  }
 };
 
 // not a .on but a .handle, first argument is event
@@ -478,29 +483,135 @@ const desc = (event, workspace) => {
   return list;
 };
 
+// detect workspace file format
+const detectWorkspaceFormat = (data) => {
+  if (!data || data.length === 0) return "empty";
+
+  const firstMinion = data[0];
+  // new format has 'views' array and 'activeViewIndex'
+  // old format has 'url' property directly on minion object
+  if (
+    firstMinion.views &&
+    Array.isArray(firstMinion.views) &&
+    typeof firstMinion.activeViewIndex === "number"
+  ) {
+    return "new";
+  } else if (typeof firstMinion.url === "string") {
+    return "old";
+  } else {
+    return "unknown";
+  }
+};
+
 const _load = (workspace, frame) => {
   const data = app.getPath("userData");
   const filePath = path.join(data, "workspaces", `${workspace}.json`);
   if (fs.existsSync(filePath)) {
     var json = JSON.parse(fs.readFileSync(filePath));
-    json.forEach((data) => {
-      var minion = open(data.url, frame);
-      minion.workspace = workspace; // store workspace name
-      minion.setPosition(data.x, data.y, false);
-      minion.setSize(data.width, data.height, false);
+    const format = detectWorkspaceFormat(json);
 
-      // set scroll positions
-      minion.webContents.once("did-finish-load", () => {
-        minion.webContents
-          .executeJavaScript(
-            `window.scrollTo(${data.scrollX || 0}, ${data.scrollY || 0})`,
-          )
-          .catch((err) => {
-            console.error("error setting scroll position: ", err);
-          });
-      });
-    });
+    console.log(`Loading workspace "${workspace}" in ${format} format`);
+
+    if (format === "old") {
+      _loadOldFormat(json, workspace, frame);
+    } else if (format === "new") {
+      _loadNewFormat(json, workspace, frame);
+    } else {
+      console.error(`Unknown or empty workspace format for "${workspace}"`);
+    }
   }
+};
+
+// load workspace in old format (single URL per minion)
+const _loadOldFormat = (json, workspace, frame) => {
+  json.forEach((data) => {
+    var minion = open(data.url, frame);
+    minion.workspace = workspace; // store workspace name
+    minion.setPosition(data.x, data.y, false);
+    minion.setSize(data.width, data.height, false);
+
+    // set scroll positions
+    minion.webContents.once("did-finish-load", () => {
+      minion.webContents
+        .executeJavaScript(
+          `window.scrollTo(${data.scrollX || 0}, ${data.scrollY || 0})`,
+        )
+        .catch((err) => {
+          console.error("error setting scroll position: ", err);
+        });
+    });
+  });
+};
+
+// load workspace in new format (multiple views per minion)
+const _loadNewFormat = (json, workspace, frame) => {
+  json.forEach((minionData) => {
+    if (!minionData.views || minionData.views.length === 0) {
+      console.error("Minion data has no views, skipping");
+      return;
+    }
+
+    // create minion with first view
+    const firstView = minionData.views[0];
+    var minion = open(firstView.url, frame);
+    minion.workspace = workspace; // store workspace name
+
+    // restore window properties
+    minion.setPosition(minionData.x, minionData.y, false);
+    minion.setSize(minionData.width, minionData.height, false);
+
+    // set up first view state after it loads
+    minion.webContents.once("did-finish-load", () => {
+      // set zoom and scroll for first view
+      minion.webContents.setZoomFactor(firstView.zoomFactor || 1);
+      minion.webContents
+        .executeJavaScript(
+          `window.scrollTo(${firstView.scrollX || 0}, ${firstView.scrollY || 0})`,
+        )
+        .catch((err) => {
+          console.error("error setting scroll position: ", err);
+        });
+    });
+
+    // add additional views if there are more than one
+    for (let i = 1; i < minionData.views.length; i++) {
+      const viewData = minionData.views[i];
+
+      // add view using opin functionality
+      setTimeout(() => {
+        opin(viewData.url, minion.id);
+
+        // set up the newly added view state after it loads
+        const addedView = minion.views[minion.views.length - 1];
+        addedView.webContents.once("did-finish-load", () => {
+          addedView.webContents.setZoomFactor(viewData.zoomFactor || 1);
+          addedView.webContents
+            .executeJavaScript(
+              `window.scrollTo(${viewData.scrollX || 0}, ${viewData.scrollY || 0})`,
+            )
+            .catch((err) => {
+              console.error(
+                "error setting scroll position for added view: ",
+                err,
+              );
+            });
+        });
+      }, i * 100); // small delay to ensure views are added in order
+    }
+
+    // switch to the previously active tab after all views are added
+    if (
+      minionData.activeViewIndex &&
+      minionData.activeViewIndex < minionData.views.length
+    ) {
+      setTimeout(
+        () => {
+          minion.switchToView(minionData.activeViewIndex);
+        },
+        minionData.views.length * 100 + 100,
+      );
+    }
+  });
 };
 
 const load = (workspace) => {
