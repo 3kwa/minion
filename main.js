@@ -599,7 +599,7 @@ const _loadNewFormat = (json, workspace, frame) => {
 
     // switch to the previously active tab after all views are added
     if (
-      typeof minionData.activeViewIndex === 'number' &&
+      typeof minionData.activeViewIndex === "number" &&
       minionData.activeViewIndex >= 0 &&
       minionData.activeViewIndex < minionData.views.length
     ) {
