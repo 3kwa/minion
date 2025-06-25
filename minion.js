@@ -13,22 +13,20 @@ class Minion {
 
     // Store properties for compatibility
     this.hasFrame = options.frame !== false;
+    this.webPreferences = webPreferences || {};
 
-    // Create initial WebContentsView
-    this.view = new WebContentsView({
-      webPreferences: webPreferences || {},
-    });
-
-    // Add view to window and set bounds
-    this.window.contentView.addChildView(this.view);
-    // Set view to fill the entire content area
-    this.window.setContentView(this.view);
+    // Create views array and track active view
+    this.views = [];
+    this.activeViewIndex = 0;
+    
+    // Create initial view using _addView method
+    this._addView();
 
     // Proxy common properties
     this.id = this.window.id;
-    this.webContents = this.view.webContents;
+    this.webContents = this.views[this.activeViewIndex].webContents;
 
-    // Handle window resize to update view bounds
+    // Handle window resize to update active view bounds
     this.window.on("resized", () => {
       this._updateViewBounds();
     });
@@ -53,17 +51,45 @@ class Minion {
   }
 
   loadURL(url) {
-    return this.view.webContents.loadURL(url);
+    return this.views[this.activeViewIndex].webContents.loadURL(url);
   }
 
-  // Helper method to update view bounds
+  // Helper method to add a new view
+  _addView() {
+    const view = new WebContentsView({
+      webPreferences: this.webPreferences,
+    });
+    
+    // Add view to array
+    this.views.push(view);
+    
+    // Add view to window
+    this.window.contentView.addChildView(view);
+    
+    // Make the newly added view the active view
+    this.activeViewIndex = this.views.length - 1;
+    this.window.setContentView(view);
+    this.webContents = view.webContents;
+    
+    // Update bounds for all views
+    this._updateViewBounds();
+    
+    return view;
+  }
+
+  // Helper method to update all view bounds
   _updateViewBounds() {
     const contentBounds = this.window.getContentBounds();
-    this.view.setBounds({
+    const bounds = {
       x: 0,
       y: 0,
       width: contentBounds.width,
       height: contentBounds.height,
+    };
+    
+    // Update bounds for all views so they're ready when switching
+    this.views.forEach(view => {
+      view.setBounds(bounds);
     });
   }
 
