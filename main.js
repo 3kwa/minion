@@ -381,14 +381,12 @@ const open = (url, frame = true) => {
 };
 
 const shut = (workspace) => {
-  let minions = Minion.getAllMinions();
-    console.log(minions.length);
+  // creating a snapshot because close modifies Minion.#instance - shut all problem fix
+  let minions = [...Minion.getAllMinions()];
   if (workspace.toLowerCase() != "all") {
     minions = minions.filter((e) => e.workspace === workspace);
   }
-    console.log(minions.length);
   minions.forEach((minion) => {
-    console.log(minions.url);
     minion.close();
   });
   isMoveEnabled = false; // reset move enabled
