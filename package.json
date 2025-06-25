@@ -12,20 +12,21 @@
   "author": "Eugene Van den Bulke",
   "license": "Unlicense",
   "devDependencies": {
-    "@electron-forge/cli": "^7.5.0",
-    "@electron-forge/maker-deb": "^7.5.0",
-    "@electron-forge/maker-dmg": "^7.5.0",
+    "@electron-forge/cli": "^7.8.1",
+    "@electron-forge/maker-deb": "^7.8.1",
+    "@electron-forge/maker-dmg": "^7.8.1",
     "@electron-forge/maker-rpm": "^7.5.0",
-    "@electron-forge/maker-squirrel": "^7.5.0",
-    "@electron-forge/maker-zip": "^7.5.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
-    "electron": "^33.3.1",
-    "nodemon": "^3.0.2"
+    "@electron-forge/maker-squirrel": "^7.8.1",
+    "@electron-forge/maker-zip": "^7.8.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.1",
+    "electron": "^36.5.0",
+    "nodemon": "^3.1.10"
   },
   "dependencies": {
-    "commander": "^13.0.0",
-    "electron-log": "^5.0.3",
-    "electron-squirrel-startup": "^1.0.0",
-    "jquery.terminal": "^2.37.2"
+    "commander": "^14.0.0",
+    "electron-forge": "^5.2.4",
+    "electron-log": "^5.4.1",
+    "electron-squirrel-startup": "^1.0.1",
+    "jquery.terminal": "^2.44.1"
   }
 }
