@@ -4,6 +4,9 @@ __electronLog.info("dominion starting");
 const open = (url) => {
   window.electronAPI.open(url);
 };
+const opin = (url, id) => {
+  window.electronAPI.opin(url, id);
+};
 const shut = (workspace) => {
   window.electronAPI.shut(workspace);
 };
@@ -55,6 +58,9 @@ jQuery(function ($, undefined) {
       // minion:
       open: (url) => {
         open(url);
+      },
+      opin: (url, id) => {
+        opin(url, id);
       },
       shut: (workspace) => {
         shut(workspace);
@@ -134,7 +140,7 @@ ${help}`,
         );
       },
       historyFilter: (command) => {
-        return "open shut info save desc load less dele list help quit".includes(
+        return "open opin shut info save desc load less dele list help quit".includes(
           $.terminal.parse_command(command).name,
         );
       },

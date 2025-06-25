@@ -235,6 +235,9 @@ app.whenReady().then(() => {
   ipcMain.on("open", (event, url) => {
     open(url);
   });
+  ipcMain.on("opin", (event, url, id) => {
+    opin(url, id);
+  });
   ipcMain.on("shut", (event, workspace) => {
     shut(workspace);
   });
@@ -367,14 +370,24 @@ const shut = (workspace) => {
   isMoveEnabled = false; // reset move enabled
 };
 
+const opin = (url, id) => {
+  const minion = Minion.findMinionById(id);
+  if (minion) {
+    minion._addView();
+    minion.loadURL(url);
+  } else {
+    console.error(`Minion with id ${id} not found`);
+  }
+};
+
 const info = () => {
   var list = [];
   const minions = Minion.getAllMinions();
   minions.forEach((minion, index) => {
-    var url = minion.webContents.getURL();
+    var urls = minion.views.map(view => view.webContents.getURL());
     list.push({
       id: minion.id,
-      urls: [url],
+      urls: urls,
     });
   });
   return list;

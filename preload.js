@@ -17,6 +17,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("electronAPI", {
   // minion:
   open: (url) => ipcRenderer.send("open", url),
+  opin: (url, id) => ipcRenderer.send("opin", url, id),
   shut: (workspace) => ipcRenderer.send("shut", workspace),
   // workspace:
   info: () => ipcRenderer.invoke("info"),
