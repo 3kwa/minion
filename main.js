@@ -184,6 +184,29 @@ const template = [
         visible: true,
       },
       { type: "separator" },
+      {
+        label: "next tab",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.switchToNextView();
+          }
+        },
+        accelerator: "Control+Tab",
+        visible: true,
+      },
+      {
+        label: "close tab",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.closeCurrentTab();
+          }
+        },
+        accelerator: "Control+W",
+        visible: true,
+      },
+      { type: "separator" },
       { role: "reload" },
       { role: "forceReload" },
       { role: "toggleDevTools" },
@@ -363,9 +386,7 @@ const shut = (workspace) => {
     minions = minions.filter((e) => e.workspace === workspace);
   }
   minions.forEach((minion) => {
-    if (minion.id != parseInt(process.env.DOMINION_ID)) {
       minion.close();
-    }
   });
   isMoveEnabled = false; // reset move enabled
 };

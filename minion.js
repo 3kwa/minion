@@ -26,6 +26,7 @@ class Minion {
     this.id = this.window.id - 1;
     this.webContents = this.views[this.activeViewIndex].webContents;
 
+
     // Handle window resize to update active view bounds
     this.window.on("resized", () => {
       this._updateViewBounds();
@@ -66,6 +67,7 @@ class Minion {
     // Add view to window
     this.window.contentView.addChildView(view);
 
+
     // Make the newly added view the active view
     this.activeViewIndex = this.views.length - 1;
     this.window.setContentView(view);
@@ -92,6 +94,48 @@ class Minion {
       view.setBounds(bounds);
     });
   }
+
+  // Switch to a specific view by index
+  switchToView(index) {
+    if (index >= 0 && index < this.views.length && index !== this.activeViewIndex) {
+      this.activeViewIndex = index;
+      this.window.setContentView(this.views[index]);
+      this.webContents = this.views[index].webContents;
+    }
+  }
+
+  // Switch to the next view (circular)
+  switchToNextView() {
+    if (this.views.length > 1) {
+      const nextIndex = (this.activeViewIndex + 1) % this.views.length;
+      this.switchToView(nextIndex);
+    }
+  }
+
+  // Close the current tab (only if there are multiple tabs)
+  closeCurrentTab() {
+    if (this.views.length > 1) {
+      // Remove the current view from the window
+      const currentView = this.views[this.activeViewIndex];
+      this.window.contentView.removeChildView(currentView);
+
+      // Remove from views array
+      this.views.splice(this.activeViewIndex, 1);
+
+      // Adjust activeViewIndex if needed
+      if (this.activeViewIndex >= this.views.length) {
+        this.activeViewIndex = this.views.length - 1;
+      }
+
+      // Switch to the new active view
+      this.window.setContentView(this.views[this.activeViewIndex]);
+      this.webContents = this.views[this.activeViewIndex].webContents;
+
+      return true; // Tab was closed
+    }
+    return false; // No tab closed (only one left)
+  }
+
 
   // Event proxy methods
   on(eventName, listener) {
