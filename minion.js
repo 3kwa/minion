@@ -18,12 +18,12 @@ class Minion {
     // Create views array and track active view
     this.views = [];
     this.activeViewIndex = 0;
-    
+
     // Create initial view using _addView method
     this._addView();
 
     // Proxy common properties
-    this.id = this.window.id;
+    this.id = this.window.id - 1;
     this.webContents = this.views[this.activeViewIndex].webContents;
 
     // Handle window resize to update active view bounds
@@ -59,21 +59,21 @@ class Minion {
     const view = new WebContentsView({
       webPreferences: this.webPreferences,
     });
-    
+
     // Add view to array
     this.views.push(view);
-    
+
     // Add view to window
     this.window.contentView.addChildView(view);
-    
+
     // Make the newly added view the active view
     this.activeViewIndex = this.views.length - 1;
     this.window.setContentView(view);
     this.webContents = view.webContents;
-    
+
     // Update bounds for all views
     this._updateViewBounds();
-    
+
     return view;
   }
 
@@ -86,9 +86,9 @@ class Minion {
       width: contentBounds.width,
       height: contentBounds.height,
     };
-    
+
     // Update bounds for all views so they're ready when switching
-    this.views.forEach(view => {
+    this.views.forEach((view) => {
       view.setBounds(bounds);
     });
   }
@@ -155,6 +155,11 @@ class Minion {
   // Static method to get all minions
   static getAllMinions() {
     return Minion.#instances;
+  }
+
+  // Static method to find minion by ID
+  static findMinionById(id) {
+    return Minion.#instances.find((minion) => minion.id === id);
   }
 }
 

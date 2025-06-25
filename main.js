@@ -372,12 +372,10 @@ const info = () => {
   const minions = Minion.getAllMinions();
   minions.forEach((minion, index) => {
     var url = minion.webContents.getURL();
-    if (minion.id != parseInt(process.env.DOMINION_ID)) {
-      list.push({
-        id: minion.id - 1,
-        urls: [url],
-      });
-    }
+    list.push({
+      id: minion.id,
+      urls: [url],
+    });
   });
   return list;
 };
