@@ -30,7 +30,7 @@ jobs:
       - name: Compute SHA256 for macOS ZIP
         if: matrix.os == 'macos-latest'
         run: |
-          cd out/make/zip/darwin/x64
+          cd out/make/zip/darwin/arm64
           ZIP_FILE=$(ls *.zip | head -n 1)
           SHA256=$(shasum -a 256 "$ZIP_FILE" | awk '{print $1}')
           echo "SHA256: $SHA256"
