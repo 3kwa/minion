@@ -119,7 +119,7 @@ dominion:
 ---------------------------------------
 >>> help
 ${help}`,
-      height: 550,
+      height: '100%',
       prompt: ">>> ",
       keymap: {
         "CTRL+D": function (e, original) {

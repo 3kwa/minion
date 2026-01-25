@@ -13,17 +13,21 @@
       html,
       body {
         margin: 0;
-        height: 100%;
+        height: 100vh;
         overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      #terminal {
+        flex: 1;
+        overflow: hidden;
       }
       #footer {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        text-align: center;
-        font-family: "Courier New", courier, monospace;
+        flex-shrink: 0;
         padding: 0.3em;
         background-color: beige;
+        text-align: center;
+        font-family: "Courier New", courier, monospace;
       }
     </style>
   </head>
