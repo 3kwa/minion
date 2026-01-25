@@ -207,8 +207,28 @@ const template = [
         visible: true,
       },
       { type: "separator" },
-      { role: "reload" },
-      { role: "forceReload" },
+      {
+        label: "reload",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.webContents.reload();
+          }
+        },
+        accelerator: "CommandOrControl+R",
+        visible: true,
+      },
+      {
+        label: "force reload",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.webContents.reloadIgnoringCache();
+          }
+        },
+        accelerator: "CommandOrControl+Shift+R",
+        visible: true,
+      },
       { role: "toggleDevTools" },
       { type: "separator" },
       { role: "resetZoom" },
