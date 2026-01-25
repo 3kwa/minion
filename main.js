@@ -300,6 +300,9 @@ app.whenReady().then(() => {
     dele(workspace);
   });
   ipcMain.handle("list", list);
+  ipcMain.handle("dflt", (event, mode, workspace) => {
+    return dflt(mode, workspace);
+  });
   // dominion:
   ipcMain.on("quit", (event) => {
     quit();
@@ -308,6 +311,9 @@ app.whenReady().then(() => {
   // EMIT set by the CLI parser
   if (EMIT !== null) {
     ipcMain.emit(EMIT.at(0), "", EMIT.at(1));
+  } else {
+    // Load default workspace if no CLI command provided
+    loadDefault();
   }
 });
 
@@ -494,8 +500,18 @@ const desc = (event, workspace) => {
   var list = [];
   if (fs.existsSync(filePath)) {
     var json = JSON.parse(fs.readFileSync(filePath));
-    json.forEach((data) => {
-      list.push(data.url);
+    json.forEach((minion) => {
+      const urls = [];
+      if (minion.views && Array.isArray(minion.views)) {
+        // New format with views array
+        minion.views.forEach((view) => {
+          urls.push(view.url);
+        });
+      } else if (minion.url) {
+        // Old format with single url
+        urls.push(minion.url);
+      }
+      list.push({ id: minion.id, urls: urls });
     });
   }
   return list;
@@ -659,6 +675,54 @@ const list = () => {
     list.push(path.parse(file).name);
   });
   return list;
+};
+
+// Default workspace management
+const getDefaultPath = () => {
+  const data = app.getPath("userData");
+  return path.join(data, "default.json");
+};
+
+const dflt = (mode, workspace) => {
+  const filePath = getDefaultPath();
+
+  // Show current default
+  if (!mode) {
+    if (fs.existsSync(filePath)) {
+      const config = JSON.parse(fs.readFileSync(filePath));
+      return `${config.mode} ${config.workspace}`;
+    }
+    return "no default set";
+  }
+
+  // Clear default
+  if (mode === "not") {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    return "no default";
+  }
+
+  // Set default (load or less)
+  if ((mode === "load" || mode === "less") && workspace) {
+    const config = { mode, workspace };
+    fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
+    return `default = ${mode} ${workspace}`;
+  }
+
+  return "invalid syntax: dflt [load|less <workspace> | none]";
+};
+
+const loadDefault = () => {
+  const filePath = getDefaultPath();
+  if (fs.existsSync(filePath)) {
+    const config = JSON.parse(fs.readFileSync(filePath));
+    if (config.mode === "load") {
+      load(config.workspace);
+    } else if (config.mode === "less") {
+      less(config.workspace);
+    }
+  }
 };
 
 const quit = () => {

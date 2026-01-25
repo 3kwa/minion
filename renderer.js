@@ -32,21 +32,25 @@ const dele = (workspace) => {
 const list = () => {
   return window.electronAPI.list();
 };
+const dflt = (mode, workspace) => {
+  return window.electronAPI.dflt(mode, workspace);
+};
 // dominion:
 const help = `windows:
-  [[;black;white]open] <url>          : opens a new window and loads <url>
-  [[;black;white]opin] <url> <id>     : loads <url> in window <id>
-  [[;black;white]shut] <name> / all   : shuts windows saved in <name> or [[b;;]all]
-  [[;black;white]info]                : lists windows
+  [[;black;white]open] <url>              : opens a new window and loads <url>
+  [[;black;white]opin] <url> <id>         : loads <url> in window <id>
+  [[;black;white]shut] <name> / all       : shuts windows saved in <name> or [[b;;]all]
+  [[;black;white]info]                    : lists windows
 workspace:
-  [[;black;white]save] <name>         : saves windows under <name>
-  [[;black;white]desc] <name>         : lists windows saved under <name>
-  [[;black;white]load] / [[;black;white]less]  <name> : opens all windows saved under <name> ...
-  [[;black;white]dele] <name>         : deletes <name>
-  [[;black;white]list]                : lists workspaces
+  [[;black;white]save] <name>             : saves windows under <name>
+  [[;black;white]desc] <name>             : lists windows saved under <name>
+  [[;black;white]load] / [[;black;white]less]  <name>     : opens all windows saved under <name>
+  [[;black;white]dele] <name>             : deletes <name>
+  [[;black;white]list]                    : lists workspaces
 dominion:
-  [[;black;white]help]                : ...
-  [[;black;white]quit]                : closes [[b;;]all] windows and quits`;
+  [[;black;white]help]                    : ...
+  [[;black;white]dflt] <action> <name>    : default [load|less|not] <name>
+  [[;black;white]quit]                    : closes [[b;;]all] windows and quits`;
 const quit = () => {
   window.electronAPI.quit();
 };
@@ -80,8 +84,10 @@ jQuery(function ($, undefined) {
       },
       desc: function (workspace) {
         desc(workspace).then((result) => {
-          result.forEach((minion, index) => {
-            this.echo(`  [[;black;white]${minion}]`);
+          result.forEach((minion) => {
+            this.echo(
+              `  [[;black;white] ${minion.id.toString().padStart(2, " ")} ] ${minion.urls.join(" + ")}`,
+            );
           });
         });
       },
@@ -99,6 +105,11 @@ jQuery(function ($, undefined) {
           result.forEach((workspace, index) => {
             this.echo(`  [[;black;white]${workspace}]`);
           });
+        });
+      },
+      dflt: function (mode, workspace) {
+        dflt(mode, workspace).then((result) => {
+          this.echo(`  [[;black;white]${result}]`);
         });
       },
       // dominion:
@@ -132,7 +143,7 @@ ${help}`,
         terminal.echo(
           `[[;red;]ERR [[b;;]${command}] not in ` +
             $.terminal.escape_formatting(
-              "[open, opin, shut, info, save, desc, load, less, dele, list, ",
+              "[open, opin, shut, info, save, desc, load, less, dele, list, dflt, ",
             ) +
             "[[ub;;]help], quit" +
             $.terminal.escape_formatting("]") +
@@ -140,7 +151,7 @@ ${help}`,
         );
       },
       historyFilter: (command) => {
-        return "open opin shut info save desc load less dele list help quit".includes(
+        return "open opin shut info save desc load less dele list dflt help quit".includes(
           $.terminal.parse_command(command).name,
         );
       },

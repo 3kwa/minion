@@ -27,6 +27,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   less: (workspace) => ipcRenderer.send("less", workspace),
   dele: (workspace) => ipcRenderer.send("dele", workspace),
   list: () => ipcRenderer.invoke("list"),
+  dflt: (mode, workspace) => ipcRenderer.invoke("dflt", mode, workspace),
   // dominion:
   quit: () => ipcRenderer.send("quit"),
 });
