@@ -152,12 +152,62 @@ const template = [
   {
     label: "edit",
     submenu: [
-      { role: "undo" },
-      { role: "redo" },
+      {
+        label: "undo",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.webContents.undo();
+          }
+        },
+        accelerator: "CommandOrControl+Z",
+        visible: true,
+      },
+      {
+        label: "redo",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.webContents.redo();
+          }
+        },
+        accelerator: isMac ? "Command+Shift+Z" : "Control+Y",
+        visible: true,
+      },
       { type: "separator" },
-      { role: "cut" },
-      { role: "copy" },
-      { role: "paste" },
+      {
+        label: "cut",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.webContents.cut();
+          }
+        },
+        accelerator: "CommandOrControl+X",
+        visible: true,
+      },
+      {
+        label: "copy",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.webContents.copy();
+          }
+        },
+        accelerator: "CommandOrControl+C",
+        visible: true,
+      },
+      {
+        label: "paste",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.webContents.paste();
+          }
+        },
+        accelerator: "CommandOrControl+V",
+        visible: true,
+      },
     ],
   },
   // view
@@ -229,11 +279,53 @@ const template = [
         accelerator: "CommandOrControl+Shift+R",
         visible: true,
       },
-      { role: "toggleDevTools" },
+      {
+        label: "toggle developer tools",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.webContents.toggleDevTools();
+          }
+        },
+        accelerator: isMac ? "Alt+Command+I" : "Control+Shift+I",
+        visible: true,
+      },
       { type: "separator" },
-      { role: "resetZoom" },
-      { role: "zoomIn" },
-      { role: "zoomOut" },
+      {
+        label: "actual size",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            focusedMinion.webContents.setZoomLevel(0);
+          }
+        },
+        accelerator: "CommandOrControl+0",
+        visible: true,
+      },
+      {
+        label: "zoom in",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            const currentZoom = focusedMinion.webContents.getZoomLevel();
+            focusedMinion.webContents.setZoomLevel(currentZoom + 0.5);
+          }
+        },
+        accelerator: "CommandOrControl+Plus",
+        visible: true,
+      },
+      {
+        label: "zoom out",
+        click: () => {
+          const focusedMinion = Minion.getFocusedMinion();
+          if (focusedMinion) {
+            const currentZoom = focusedMinion.webContents.getZoomLevel();
+            focusedMinion.webContents.setZoomLevel(currentZoom - 0.5);
+          }
+        },
+        accelerator: "CommandOrControl+-",
+        visible: true,
+      },
     ],
   },
   // window
