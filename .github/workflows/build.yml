@@ -27,6 +27,18 @@ jobs:
       - name: Build application
         run: npm run make
 
+      - name: Compute SHA256 for macOS ZIP
+        if: matrix.os == 'macos-latest'
+        run: |
+          cd out/make/zip/darwin/x64
+          ZIP_FILE=$(ls *.zip | head -n 1)
+          SHA256=$(shasum -a 256 "$ZIP_FILE" | awk '{print $1}')
+          echo "SHA256: $SHA256"
+          echo "File: $ZIP_FILE"
+          echo "$SHA256" > ../../../../../macos-sha256.txt
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+        id: macos_hash
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'release'
@@ -37,3 +49,4 @@ jobs:
             out/make/**/*.rpm
             out/make/squirrel.windows/**/*.exe
             out/make/squirrel.windows/**/*.nupkg
+            macos-sha256.txt
